@@ -216,10 +216,10 @@ app.get("/fetch-user", verifyUser, async (req, res) => {
 });
 
 
+const port = process.env.PORT || 3001;
 
-
-app.listen(3001, function () {
+app.listen(port, function () {
   const db = new Database();
   db.TestConnection();
-  console.log("Server is up and running at http://localhost:3001");
+  console.log(`Server is up and running at http://localhost:${port}`);
 });
