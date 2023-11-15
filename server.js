@@ -215,8 +215,9 @@ app.get("/fetch-user", verifyUser, async (req, res) => {
   }
 });
 
+const port = process.env.PORT || 3306;
 
-app.listen(3306, function () {
+app.listen(port, function () {
   const db = new Database();
   db.TestConnection();
   console.log(`Server is up and running at https://sparkling-red-snapper.cyclic.app`);
