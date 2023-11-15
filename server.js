@@ -24,12 +24,10 @@ const questionsRouter = require("./src/routes/Questions"); // Add this
 const filterRouter = require ("./src/routes/FilterQuestion")
 const verifyRouter = require ("./src/routes/Verification")
 const usersRouter = require ("./src/routes/Users")
-const roomRouter = require ("./src/routes/Room")
 const examRoomRouter = require ("./src/routes/ExamRoom")
 const dashboardRouter = require ("./src/routes/Dashboard")
 
 app.use("/exams", examsRouter);
-app.use("/room", roomRouter);
 app.use("/exam-room", examRoomRouter);
 app.use("/questions", questionsRouter); // Add this
 app.use("/filter", filterRouter); // Add this
@@ -214,7 +212,15 @@ app.get("/fetch-user", verifyUser, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
+app.get('/room/rooms', async (req, res) => {
+  try {
+    const rooms = await queryAsync('SELECT * FROM room ORDER BY room_id DESC');
+    res.json({ success: true, rooms });
+  } catch (error) {
+    console.error('Error fetching rooms:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch rooms' });
+  }
+});
 const port = process.env.PORT || 3306;
 
 app.listen(port, function () {
