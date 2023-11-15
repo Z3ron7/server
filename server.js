@@ -216,7 +216,7 @@ app.get("/fetch-user", verifyUser, async (req, res) => {
 });
 
 
-app.listen(443, function () {
+app.listen(3306, function () {
   const db = new Database();
   db.TestConnection();
   console.log(`Server is up and running at https://sparkling-red-snapper.cyclic.app`);
