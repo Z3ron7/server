@@ -29,6 +29,7 @@ router.post('/room', async (req, res) => {
 // Read all rooms
 router.get('/rooms', async (req, res) => {
   try {
+     console.log('Handling /room/rooms route');
     const rooms = await queryAsync('SELECT * FROM room ORDER BY room_id DESC');
     res.json({ success: true, rooms });
   } catch (error) {
