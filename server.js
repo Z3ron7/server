@@ -13,7 +13,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:3000"],
+    origin: ["https://smartexamhub.vercel.app"],
     method: ["POST", "GET"],
     credentials: true,
   })
@@ -216,10 +216,8 @@ app.get("/fetch-user", verifyUser, async (req, res) => {
 });
 
 
-const port = process.env.PORT || 3001;
-
-app.listen(port, function () {
+app.listen(443, function () {
   const db = new Database();
   db.TestConnection();
-  console.log(`Server is up and running at http://localhost:${port}`);
+  console.log(`Server is up and running at https://sparkling-red-snapper.cyclic.app`);
 });
