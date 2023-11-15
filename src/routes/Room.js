@@ -1,6 +1,6 @@
+const Database = require('../configs/Database');
 const express = require('express');
 const { promisify } = require('util');
-const Database = require('../configs/Database');
 
 const router = express.Router();
 const db = new Database();
