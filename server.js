@@ -65,7 +65,7 @@ const transporter = nodemailer.createTransport({
 const verifyUser = (req, res, next) => {
   const token = req.cookies.token;
   if (!token) {
-    return res.json({ Error: "You are not authenticated" });
+    return res.json({ Error: "You are not authenticated!" });
   } else {
     jwt.verify(token, "jwt-secret-key", (err, decoded) => {
       if (err) {
