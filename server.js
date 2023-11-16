@@ -21,6 +21,7 @@ app.use(
 
 const examsRouter = require("./src/routes/Exam");
 const questionsRouter = require("./src/routes/Questions"); // Add this
+const roomRouter = require("./src/routes/Room"); // Add this
 const filterRouter = require ("./src/routes/FilterQuestion")
 const verifyRouter = require ("./src/routes/Verification")
 const usersRouter = require ("./src/routes/Users")
@@ -29,11 +30,12 @@ const dashboardRouter = require ("./src/routes/Dashboard")
 
 app.use("/exams", examsRouter);
 app.use("/exam-room", examRoomRouter);
-app.use("/questions", questionsRouter); // Add this
-app.use("/filter", filterRouter); // Add this
-app.use("/verify", verifyRouter); // Add this
-app.use("/users", usersRouter); // Add this
-app.use("/dashboard", dashboardRouter); // Add this
+app.use("/room", roomRouter);
+app.use("/questions", questionsRouter);
+app.use("/filter", filterRouter);
+app.use("/verify", verifyRouter); 
+app.use("/users", usersRouter);
+app.use("/dashboard", dashboardRouter); 
 app.use(cookieParser());
 
 const db = new Database();
@@ -42,7 +44,7 @@ const publicPath = path.join(__dirname, '..', 'smart-exam-final', 'public', 'ava
 
 const storage = multer.diskStorage({
   destination: function (req, file, callback) {
-    callback(null, publicPath); // Use the dynamically determined 'public' directory path
+    callback(null, publicPath); 
   },
   filename: function (req, file, callback) {
     callback(null, file.originalname); // Use the original filename as the stored filename
@@ -212,14 +214,6 @@ app.get("/fetch-user", verifyUser, async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-app.get('/room/rooms', async (req, res) => {
-  try {
-    const rooms = await queryAsync('SELECT * FROM room ORDER BY room_id DESC');
-    res.json({ success: true, rooms });
-  } catch (error) {
-    console.error('Error fetching rooms:', error);
-    res.status(500).json({ success: false, message: 'Failed to fetch rooms' });
-  }
-});
+
 
 app.listen();
