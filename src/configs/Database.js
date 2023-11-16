@@ -1,20 +1,27 @@
 const mysql = require("mysql2");
 require("dotenv/config");
+
 const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME } = process.env;
+
 class Database {
   constructor() {
-    this.connection = mysql.createConnection({
+    this.pool = mysql.createPool({
       host: DB_HOST,
       user: DB_USER,
       password: DB_PASSWORD,
       database: DB_NAME,
+      connectionLimit: 10,
     });
   }
 
-  TestConnection() {
-    this.connection.connect((err) => {
-      if (err) return err;
-      console.log("Database connected");
+  testConnection() {
+    this.pool.getConnection((err, connection) => {
+      if (err) {
+        console.error("Error connecting to the database:", err);
+      } else {
+        console.log("Database connected");
+        connection.release(); // Release the connection back to the pool
+      }
     });
   }
 }
