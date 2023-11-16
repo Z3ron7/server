@@ -37,7 +37,7 @@ app.use("/dashboard", dashboardRouter); // Add this
 app.use(cookieParser());
 
 const db = new Database();
-const conn = db.connection;
+const conn = db.pool;
 const publicPath = path.join(__dirname, '..', 'smart-exam-final', 'public', 'avatar');
 
 const storage = multer.diskStorage({
