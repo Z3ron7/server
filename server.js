@@ -221,6 +221,5 @@ app.get('/room/rooms', async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to fetch rooms' });
   }
 });
-const port = process.env.PORT || 3306;
 
 app.listen();
