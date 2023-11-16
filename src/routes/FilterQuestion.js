@@ -5,7 +5,7 @@ const Database = require("../configs/Database");
 const router = express.Router();
 
 const db = new Database();
-const conn = db.connection;
+const conn = db.pool;
 
 const queryAsync = promisify(conn.query).bind(conn);
 
