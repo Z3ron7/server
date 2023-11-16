@@ -224,6 +224,6 @@ app.get('/room/rooms', async (req, res) => {
 
 app.listen(443, function () {
   const db = new Database();
-  db.TestConnection();
+  db.testConnection();
   console.log(`Server is up and running at https://sparkling-red-snapper.cyclic.app`);
 });
