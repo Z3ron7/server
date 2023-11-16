@@ -223,8 +223,4 @@ app.get('/room/rooms', async (req, res) => {
 });
 const port = process.env.PORT || 3306;
 
-app.listen(port, function () {
-  const db = new Database();
-  db.TestConnection();
-  console.log(`Server is up and running at https://sparkling-red-snapper.cyclic.app`);
-});
+app.listen();
