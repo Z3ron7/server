@@ -77,7 +77,7 @@ const verifyUser = (req, res, next) => {
     });
   }
 };
-app.get("/", verifyUser, (req, res) => {
+app.get("/user", verifyUser, (req, res) => {
   return res.json({ Status: "Success", name: req.name, image: req.image });
 });
 
