@@ -54,6 +54,8 @@ router.post("/create", async (req, res) => {
 });
 
 router.get('/fetch', async (req, res) => {
+  const db = new Database();
+  const conn = db.pool;
   const { program, competency, search } = req.query;
 
   // Define the base query to fetch questions and choices, including competency_id
@@ -87,15 +89,16 @@ router.get('/fetch', async (req, res) => {
       }
       query += ' (q.questionText LIKE ? OR c.choiceText LIKE ?)'; // Search in questionText and choiceText
       queryParams.push(`%${search}%`);
-      queryParams.push(`%${search}%`);
     }
   }
-  
-  try {
-    await conn.connect();
 
+  // Add randomization for both questions and choices and limit to 500
+  try {
     conn.query(query, queryParams, (err, result) => {
-      if (err) throw err;
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Internal server error' });
+      }
 
       // Create an array to hold questions
       const questions = [];
@@ -130,11 +133,8 @@ router.get('/fetch', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
-  } finally {
-    conn.end();
   }
 });
-
 
 router.put("/update/:questionId", async (req, res) => {
   const { questionId } = req.params;
