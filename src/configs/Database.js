@@ -15,13 +15,17 @@ class Database {
   }
 
   testConnection() {
-    this.pool.getConnection((err, connection) => {
-      if (err) {
-        console.error("Error connecting to the database:", err);
-      } else {
-        console.log("Database connected");
-        connection.release(); // Release the connection back to the pool
-      }
+    return new Promise((resolve, reject) => {
+      this.pool.getConnection((err, connection) => {
+        if (err) {
+          console.error("Error connecting to the database:", err);
+          reject(err);
+        } else {
+          console.log("Database connected");
+          connection.release(); // Release the connection back to the pool
+          resolve();
+        }
+      });
     });
   }
 }
