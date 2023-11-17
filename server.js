@@ -15,16 +15,6 @@ app.use(
   cors({
     origin: ['https://smartexamhub.vercel.app'],
     methods: ['POST', 'GET'], // Use "methods" instead of "method"
-    allowedHeaders: [
-      'Origin',
-      'X-Requested-With',
-      'Content-Type',
-      'Accept',
-      'x-client-key',
-      'x-client-token',
-      'x-client-secret',
-      'Authorization',
-    ], // Use "allowedHeaders" instead of "Access-Control-Allow-Headers"
     credentials: true,
   })
 );
