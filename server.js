@@ -23,7 +23,6 @@ app.use(
       'x-client-key',
       'x-client-token',
       'x-client-secret',
-      'Authorization',
     ],
     credentials: true,
   })
