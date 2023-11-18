@@ -11,20 +11,29 @@ const path = require('path');
 
 const app = express();
 app.use(express.json());
-app.use(
-  cors({
-    origin: 'https://smartexamhub.vercel.app',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'HEAD'], // Use "methods" instead of "method"
-    allowedHeaders: [
-      'Accept',
-      'Authorization',
-      'Origin',
-      'X-Requested-With',
-      'Content-Type',
-    ], 
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Check if the origin is allowed
+    const allowedOrigins = ['https://smartexamhub.vercel.app', 'https://smartexam.cyclic.app'];
+    const isAllowed = allowedOrigins.includes(origin);
+    callback(null, isAllowed ? origin : false);
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'HEAD'],
+  allowedHeaders: [
+    'Origin',
+    'X-Requested-With',
+    'Content-Type',
+    'Accept',
+    'x-client-key',
+    'x-client-token',
+    'x-client-secret',
+    'Authorization',
+  ],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+
 
 const examsRouter = require("./src/routes/Exam");
 const questionsRouter = require("./src/routes/Questions"); // Add this
