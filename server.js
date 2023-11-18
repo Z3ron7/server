@@ -18,7 +18,6 @@ app.use(
     allowedHeaders: [
       'Origin',
       'Content-Type',
-      'Accept',
       'Authorization',
     ],
     credentials: true,
