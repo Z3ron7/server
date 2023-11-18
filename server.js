@@ -22,7 +22,7 @@ app.use(
       'Accept',
       'x-client-key',
       'x-client-token',
-      'x-client-secret',
+      'Authorization',
     ],
     credentials: true,
   })
