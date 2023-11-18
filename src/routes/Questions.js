@@ -54,8 +54,6 @@ router.post("/create", async (req, res) => {
 });
 
 router.get('/fetch', async (req, res) => {
-  const db = new Database();
-  const conn = db.pool;
   const { program, competency, search } = req.query;
 
   // Define the base query to fetch questions and choices, including competency_id
@@ -206,8 +204,6 @@ router.delete("/delete/:questionId", async (req, res) => {
 
 
 router.get('/refresh', async (req, res) => {
-  const db = new Database();
-  const conn = db.pool;
   const { program, competency } = req.query;
 
   // Define the base query to fetch questions and choices, including competency_id
