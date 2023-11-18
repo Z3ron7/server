@@ -12,7 +12,20 @@ const path = require('path');
 const app = express();
 app.use(express.json());
 app.use(
-  cors({credentials: true})
+  cors({
+    methods: ['POST', 'GET', 'PUT', 'DELETE', 'HEAD'], // Use "methods" instead of "method"
+    allowedHeaders: [
+      'Origin',
+      'X-Requested-With',
+      'Content-Type',
+      'Accept',
+      'x-client-key',
+      'x-client-token',
+      'x-client-secret',
+      'Authorization',
+    ], // Use "allowedHeaders" instead of "Access-Control-Allow-Headers"
+    credentials: true,
+  })
 );
 
 const examsRouter = require("./src/routes/Exam");
