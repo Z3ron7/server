@@ -14,7 +14,8 @@ app.use(express.json());
 app.use(
   cors({
     origin: ['https://smartexamhub.vercel.app'],
-    methods: ['POST', 'GET'], // Use "methods" instead of "method"
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type'],
     credentials: true,
   })
 );
