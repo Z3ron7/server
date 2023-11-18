@@ -10,7 +10,7 @@ class Database {
       user: DB_USER,
       password: DB_PASSWORD,
       database: DB_NAME,
-      connectionLimit: 10,
+      connectionLimit: DB_LIMIT,
     });
   }
 
