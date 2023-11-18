@@ -12,12 +12,7 @@ const path = require('path');
 const app = express();
 app.use(express.json());
 const corsOptions = {
-  origin: (origin, callback) => {
-    // Check if the origin is allowed
-    const allowedOrigins = ['https://smartexamhub.vercel.app', 'https://smartexam.cyclic.app'];
-    const isAllowed = allowedOrigins.includes(origin);
-    callback(null, isAllowed ? origin : false);
-  },
+ origin: 'https://smartexamhub.vercel.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'HEAD'],
   allowedHeaders: [
     'Origin',
