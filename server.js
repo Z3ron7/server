@@ -16,8 +16,12 @@ app.use(
     origin: ['https://smartexamhub.vercel.app'],
     methods: ['GET', 'POST', 'HEAD', 'PUT', 'DELETE'],
     allowedHeaders: [
+      'X-Requested-With',
       'Content-Type',
       'Accept',
+      'x-client-key',
+      'x-client-token',
+      'x-client-secret',
       'Authorization',
     ],
     credentials: true,
