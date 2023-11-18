@@ -13,6 +13,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
+    origin: 'https://smartexamhub.vercel.app',
     methods: ['POST', 'GET', 'PUT', 'DELETE', 'HEAD'], // Use "methods" instead of "method"
     allowedHeaders: [
       'Origin',
@@ -23,7 +24,7 @@ app.use(
       'x-client-token',
       'x-client-secret',
       'Authorization',
-    ], // Use "allowedHeaders" instead of "Access-Control-Allow-Headers"
+    ], 
     credentials: true,
   })
 );
