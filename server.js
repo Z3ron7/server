@@ -16,8 +16,6 @@ app.use(
     origin: ['https://smartexamhub.vercel.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: [
-      'Origin',
-      'X-Requested-With',
       'Content-Type',
       'Accept',
       'Authorization',
