@@ -119,7 +119,7 @@ app.post('/register', upload.single('profileImage'), (req, res) => {
 
   try {
     // Validate incoming data
-    if (!name || !username || !password || !gendesr || !status) {
+    if (!name || !username || !password || !gender || !status) {
       return res.status(400).json({ Error: "Missing required fields" });
     }
 
@@ -140,7 +140,7 @@ app.post('/register', upload.single('profileImage'), (req, res) => {
     }
 
     // Hash the password
-    const hashedPassword = bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     // Set the role based on the status
     let role = 'Exam-taker'; // Default role
