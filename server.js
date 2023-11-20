@@ -194,7 +194,7 @@ app.post("/login", (req, res) => {
           });
           res.cookie("token", token{
                      secure=true,
-                    sameSite=None);
+                    sameSite=None});
           return res.json({ Status: "Login Successful", token, user_id, name, image, role, isVerified });
         } else {
           return res.json({ Error: "Password error!" });
