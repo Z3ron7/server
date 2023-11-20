@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-const bodyParser = require("body-parser");
 const salt = 5;
 const nodemailer = require('nodemailer');
 const multer = require('multer');
