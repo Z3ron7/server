@@ -119,7 +119,7 @@ app.post('/register', upload.single('profileImage'), (req, res) => {
 
   try {
     // Validate incoming data
-    if (!name || !username || !password || !gender || !status) {
+    if (!name || !username || !password || !gendesr || !status) {
       return res.status(400).json({ Error: "Missing required fields" });
     }
 
