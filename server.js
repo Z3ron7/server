@@ -87,7 +87,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const verifyUser = (req, res, next) => {
-  const token = localStorage.getItem('token');
+  const token = req.cookies.token;
   if (!token) {
     return res.json({ Error: "You are not authenticated!" });
   } else {
@@ -209,8 +209,10 @@ app.post("/login", (req, res) => {
           const token = jwt.sign({ user_id, name, image, role, isVerified }, "jwt-secret-key", {
             expiresIn: "3d",
           });
-          res.cookie("token", token);
-
+          res.cookie("token", token, {
+    httpOnly: true,
+    secure: true, // Ensures the cookie is sent only over HTTPS
+  });
           return res.json({ Status: "Login Successful", token, user_id, name, image, role, isVerified });
         } else {
           return res.json({ Error: "Password error!" });
