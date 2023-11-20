@@ -10,14 +10,24 @@ const multer = require('multer');
 const path = require('path');
 
 const app = express();
-app.use(express.json());
-app.use(cors(
- {
- origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+const corsOptions = {
+  origin: "https://smartexamhub.vercel.app",
+  methods: "GET,PUT,POST,DELETE",
   credentials: true,
+  optionsSuccessStatus: 204,
 };
-));
+
+app.use(cors(corsOptions));
+
+app.options("*", (req, res) => {
+  console.log("Handling preflight request");
+  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.status(200).send();
+});
+
+app.use(bodyParser.json());
 
 
 const examsRouter = require("./src/routes/Exam");
