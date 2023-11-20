@@ -28,7 +28,6 @@ app.options("*", (req, res) => {
   res.status(200).send();
 });
 
-app.use(bodyParser.json());
 const examsRouter = require("./src/routes/Exam");
 const questionsRouter = require("./src/routes/Questions"); // Add this
 const roomRouter = require("./src/routes/Room"); // Add this
