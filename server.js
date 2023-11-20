@@ -107,7 +107,7 @@ app.get("/user", verifyUser, (req, res) => {
   return res.json({ Status: "Success", name: req.name, image: req.image });
 });
 
-app.post('/register', upload.single('profileImage'), async (req, res) => {
+app.post('/register', upload.single('profileImage'), (req, res) => {
   const { name, username, password, gender, status } = req.body;
   let imagePath = ''; // Initialize imagePath as null
 
