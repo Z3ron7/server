@@ -11,12 +11,13 @@ const path = require('path');
 
 const app = express();
 app.use(express.json());
-const corsOptions = {
+app.use(cors(
+ {
  origin: 'https://smartexamhub.vercel.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 };
-app.use(cors(corsOptions));
+));
 
 
 const examsRouter = require("./src/routes/Exam");
