@@ -1,8 +1,8 @@
-const Database = require('../configs/Database');
-const express = require('express');
 const { promisify } = require('util');
-
+const express = require("express")
+const Database = require("../configs/Database");
 const router = express.Router();
+
 const db = new Database();
 const conn = db.pool;
 const queryAsync = promisify(conn.query).bind(conn);
