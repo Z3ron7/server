@@ -21,9 +21,9 @@ app.use(cors(corsOptions));
 
 app.options("*", (req, res) => {
   console.log("Handling preflight request");
+  const allowedHeaders = req.headers["access-control-request-headers"];
   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-  res.header("Access-Control-Allow-Headers", "*");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
+  res.header("Access-Control-Allow-Headers", allowedHeaders);
   res.header("Access-Control-Allow-Credentials", "true");
   res.status(200).send();
 });
