@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const bodyParser = require("body-parser");
 const salt = 5;
 const nodemailer = require('nodemailer');
 const multer = require('multer');
@@ -191,7 +192,9 @@ app.post("/login", (req, res) => {
           const token = jwt.sign({ user_id, name, image, role, isVerified }, "jwt-secret-key", {
             expiresIn: "3d",
           });
-          res.cookie("token", token);
+          res.cookie("token", token{
+                     secure=true,
+                    sameSite=None);
           return res.json({ Status: "Login Successful", token, user_id, name, image, role, isVerified });
         } else {
           return res.json({ Error: "Password error!" });
