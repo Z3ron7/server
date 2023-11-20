@@ -104,7 +104,6 @@ const verifyUser = (req, res, next) => {
   }
 };
 app.get("/user", verifyUser, (req, res) => {
- res.set('Access-Control-Allow-Origin', '*');
   return res.json({ Status: "Success", name: req.name, image: req.image });
 });
 
@@ -210,8 +209,9 @@ app.post("/login", (req, res) => {
             expiresIn: "3d",
           });
           res.cookie("token", token, {
-    httpOnly: true,
-    secure: true, // Ensures the cookie is sent only over HTTPS
+          httpOnly: true,
+          secure: true, // Ensures the cookie is sent only over HTTPS
+          sameSite: 'None',
   });
           return res.json({ Status: "Login Successful", token, user_id, name, image, role, isVerified });
         } else {
