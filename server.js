@@ -14,6 +14,7 @@ const app = express();
 const corsOptions = {
   origin: "https://smartexamhub.vercel.app",
   methods: "GET,PUT,POST,DELETE",
+  credentials: true
 };
 
 app.use(cors(corsOptions));
