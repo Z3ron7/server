@@ -111,10 +111,9 @@ app.post('/register', upload.single('profileImage'), (req, res) => {
   const { name, username, password, gender, status } = req.body;
   let imagePath = ''; // Initialize imagePath as null
 
-
   if (req.file) {
     // Image has been uploaded
-    imagePath =  './avatar/' + req.file.originalname; // Path to the uploaded image
+    imagePath = './avatar/' + req.file.originalname; // Path to the uploaded image
   }
 
   try {
@@ -124,23 +123,14 @@ app.post('/register', upload.single('profileImage'), (req, res) => {
     }
 
     // Check if the username already exists
-    const usernameExists = await new Promise((resolve, reject) => {
-      const checkQuery = 'SELECT COUNT(*) as count FROM users WHERE username = ?';
-      conn.query(checkQuery, [username], (err, result) => {
-        if (err) reject(err);
-        resolve(result && result[0] && result[0].count > 0);
-      });
-    }).catch((error) => {
-      console.error('Promise rejected:', error);
-      throw error;
-    });
+    const usernameExists = conn.querySync('SELECT COUNT(*) as count FROM users WHERE username = ?', [username]);
 
-    if (usernameExists) {
+    if (usernameExists && usernameExists[0] && usernameExists[0].count > 0) {
       return res.status(400).json({ Error: "Username already exists" });
     }
 
     // Hash the password
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = bcrypt.hashSync(password, salt);
 
     // Set the role based on the status
     let role = 'Exam-taker'; // Default role
@@ -152,31 +142,26 @@ app.post('/register', upload.single('profileImage'), (req, res) => {
     }
 
     // Insert user into the database, including the imagePath
-    const insertQuery =
-      'INSERT INTO users (name, username, password, gender, role, status, image) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    const insertQuery = 'INSERT INTO users (name, username, password, gender, role, status, image) VALUES (?, ?, ?, ?, ?, ?, ?)';
     const values = [name, username, hashedPassword, gender, role, status, imagePath];
 
-    conn.query(insertQuery, values, (err, result) => {
-      if (err) {
-        console.error("Error inserting user:", err);
-        return res.status(500).json({ Error: "Failed to insert user" });
-      }
+    conn.querySync(insertQuery, values);
 
-      // Send an email to the Super Admin for verification
-      transporter.sendMail({
-        from: 'zoren.panilagao1@gmail.com', // Replace with your email
-        to: 'zoren.panilagao7@gmail.com', // Replace with the Super Admin's email
-        subject: 'New Exam-taker Registration',
-        text: 'A new Exam-taker has registered and requires verification.',
-      });
-
-      return res.json({ Status: "Success" });
+    // Send an email to the Super Admin for verification
+    transporter.sendMail({
+      from: 'zoren.panilagao1@gmail.com', // Replace with your email
+      to: 'zoren.panilagao7@gmail.com', // Replace with the Super Admin's email
+      subject: 'New Exam-taker Registration',
+      text: 'A new Exam-taker has registered and requires verification.',
     });
+
+    return res.json({ Status: "Success" });
   } catch (error) {
     console.error("Registration error:", error);
     res.status(500).json({ Error: "Registration process failed" });
   }
 });
+
 
 app.post("/login", (req, res) => {
   const sql = "SELECT * FROM users WHERE username = ?";
