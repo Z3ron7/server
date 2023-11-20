@@ -77,6 +77,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const verifyUser = (req, res, next) => {
+   res.set('Access-Control-Allow-Origin', '*');
   const token = req.cookies.token;
   if (!token) {
     return res.json({ Error: "You are not authenticated!" });
@@ -94,7 +95,7 @@ const verifyUser = (req, res, next) => {
   }
 };
 app.get("/", verifyUser, (req, res) => {
- res.set('Access-Control-Allow-Origin', 'https://smartexamhub.vercel.app');
+ res.set('Access-Control-Allow-Origin', '*');
   return res.json({ Status: "Success", name: req.name, image: req.image });
 });
 
