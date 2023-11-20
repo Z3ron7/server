@@ -14,6 +14,13 @@ const app = express();
 const corsOptions = {
  origin: 'https://smartexamhub.vercel.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+ allowedHeaders: [
+      'Content-Type',
+      'x-client-key',
+      'x-client-token',
+      'x-client-secret',
+      'Authorization',
+    ],
   credentials: true,
  optionsSuccessStatus: 204,
 };
@@ -77,7 +84,6 @@ const transporter = nodemailer.createTransport({
 });
 
 const verifyUser = (req, res, next) => {
-   res.set('Access-Control-Allow-Origin', '*');
   const token = req.cookies.token;
   if (!token) {
     return res.json({ Error: "You are not authenticated!" });
