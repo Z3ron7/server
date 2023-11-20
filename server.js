@@ -29,18 +29,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.options("https://smartexamhub.vercel.app", (req, res) => {
-  console.log("Handling preflight request");
-  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
- res.header("Access-Control-Allow-Headers", "Athorization");
- res.header("Access-Control-Allow-Headers", "Accept");
- res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.status(200).send();
-});
 
-app.use(bodyParser.json());
+app.use(express.json());
 
 const examsRouter = require("./src/routes/Exam");
 const questionsRouter = require("./src/routes/Questions"); // Add this
