@@ -124,7 +124,7 @@ app.post('/register', upload.single('profileImage'), (req, res) => {
     }
 
     // Check if the username already exists
-    const usernameExists = new Promise((resolve, reject) => {
+    const usernameExists = await new Promise((resolve, reject) => {
       const checkQuery = 'SELECT COUNT(*) as count FROM users WHERE username = ?';
       conn.query(checkQuery, [username], (err, result) => {
         if (err) reject(err);
