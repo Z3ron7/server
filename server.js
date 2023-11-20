@@ -192,7 +192,7 @@ app.post("/login", (req, res) => {
           const token = jwt.sign({ user_id, name, image, role, isVerified }, "jwt-secret-key", {
             expiresIn: "3d",
           });
-          res.cookie("token", token{
+          res.cookie("token", token,{
                      secure=true,
                     sameSite=None});
           return res.json({ Status: "Login Successful", token, user_id, name, image, role, isVerified });
