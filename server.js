@@ -97,6 +97,7 @@ const verifyUser = (req, res, next) => {
   }
 };
 app.get("/", verifyUser, (req, res) => {
+ res.set('Access-Control-Allow-Origin', 'https://smartexamhub.vercel.app');
   return res.json({ Status: "Success", name: req.name, image: req.image });
 });
 
