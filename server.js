@@ -87,7 +87,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const verifyUser = (req, res, next) => {
-  const token = req.cookies.token;
+  const token = localStorage.getItem('token');
   if (!token) {
     return res.json({ Error: "You are not authenticated!" });
   } else {
