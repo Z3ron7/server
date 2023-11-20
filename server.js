@@ -11,7 +11,6 @@ const multer = require('multer');
 const path = require('path');
 
 const app = express();
-app.use(express.json());
 const corsOptions = {
  origin: 'https://smartexamhub.vercel.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
