@@ -103,41 +103,40 @@ const verifyUser = (req, res, next) => {
     });
   }
 };
-app.get("/user", verifyUser, (req, res) => {
-  return res.json({ Status: "Success", name: req.name, image: req.image });
-});
-
-app.post('/register', upload.single('profileImage'), (req, res) => {
+app.post('/register', upload.single('profileImage'), async (req, res) => {
   const { name, username, password, gender, status } = req.body;
   let imagePath = ''; // Initialize imagePath as null
 
+
   if (req.file) {
     // Image has been uploaded
-    imagePath = './avatar/' + req.file.originalname; // Path to the uploaded image
+    imagePath =  './avatar/' + req.file.originalname; // Path to the uploaded image
   }
 
-  // Validate incoming data
-  if (!name || !username || !password || !gender || !status) {
-    return res.status(400).json({ Error: "Missing required fields" });
-  }
+  try {
+    // Validate incoming data
+    if (!name || !username || !password || !gender || !status) {
+      return res.status(400).json({ Error: "Missing required fields" });
+    }
 
-  // Check if the username already exists
-  const usernameExistsPromise = new Promise((resolve, reject) => {
-    const checkQuery = 'SELECT COUNT(*) as count FROM users WHERE username = ?';
-    conn.query(checkQuery, [username], (err, result) => {
-      if (err) reject(err);
-      resolve(result && result[0] && result[0].count > 0);
+    // Check if the username already exists
+    const usernameExists = await new Promise((resolve, reject) => {
+      const checkQuery = 'SELECT COUNT(*) as count FROM users WHERE username = ?';
+      conn.query(checkQuery, [username], (err, result) => {
+        if (err) reject(err);
+        resolve(result && result[0] && result[0].count > 0);
+      });
+    }).catch((error) => {
+      console.error('Promise rejected:', error);
+      throw error;
     });
-  });
 
-  // Use .then to handle the result of the promise
-  usernameExistsPromise.then((usernameExists) => {
     if (usernameExists) {
       return res.status(400).json({ Error: "Username already exists" });
     }
 
     // Hash the password
-    const hashedPassword = bcrypt.hashSync(password, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     // Set the role based on the status
     let role = 'Exam-taker'; // Default role
@@ -169,12 +168,11 @@ app.post('/register', upload.single('profileImage'), (req, res) => {
 
       return res.json({ Status: "Success" });
     });
-  }).catch((error) => {
-    console.error("Promise rejected:", error);
+  } catch (error) {
+    console.error("Registration error:", error);
     res.status(500).json({ Error: "Registration process failed" });
-  });
+  }
 });
-
 
 app.post("/login", (req, res) => {
   const sql = "SELECT * FROM users WHERE username = ?";
