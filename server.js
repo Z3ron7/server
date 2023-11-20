@@ -209,7 +209,6 @@ app.post("/login", (req, res) => {
             expiresIn: "3d",
           });
           res.cookie("token", token, {
-          httpOnly: true,
           secure: true, // Ensures the cookie is sent only over HTTPS
           sameSite: 'None',
   });
