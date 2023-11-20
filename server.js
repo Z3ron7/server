@@ -15,6 +15,7 @@ const corsOptions = {
  origin: 'https://smartexamhub.vercel.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
  allowedHeaders: [
+      'X-Requested-With',
       'Content-Type',
       'x-client-key',
       'x-client-token',
@@ -22,6 +23,7 @@ const corsOptions = {
       'Authorization',
     ],
   credentials: true,
+ exposedHeaders: ['set-cookie'],
  optionsSuccessStatus: 204,
 };
 
