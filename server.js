@@ -12,7 +12,7 @@ const path = require('path');
 
 const app = express();
 const corsOptions = {
-  origin: "*",
+  origin: "https://smartexamhub.vercel.app",
   methods: "GET,PUT,POST,DELETE",
 };
 
