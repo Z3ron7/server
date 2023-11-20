@@ -24,6 +24,12 @@ app.options("*", (req, res) => {
   console.log("Handling preflight request");
   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
   res.header("Access-Control-Allow-Headers", "Content-Type");
+ res.header("Access-Control-Allow-Headers", "Athorization");
+ res.header("Access-Control-Allow-Headers", "Accept");
+ res.header("Access-Control-Allow-Headers", "X-Requested-With");
+ res.header("Access-Control-Allow-Headers", "x-client-token");
+ res.header("Access-Control-Allow-Headers", "x-client-secret");
+ res.header("Access-Control-Allow-Headers", "x-client-key");
   res.header("Access-Control-Allow-Credentials", "true");
   res.status(200).send();
 });
