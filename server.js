@@ -14,18 +14,18 @@ const app = express();
 const corsOptions = {
   origin: "https://smartexamhub.vercel.app",
   methods: "GET,PUT,POST,DELETE",
-  credentials: false,
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
 
-app.options("*", (req, res) => {
-  console.log("Handling preflight request");
-  const allowedHeaders = req.headers["access-control-request-headers"];
+app.use((req, res, next) => {
+  console.log('Request received:', req.method, req.url);
+  res.header("Access-Control-Allow-Origin", "https://smartexamhub.vercel.app");
   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-  res.header("Access-Control-Allow-Headers", allowedHeaders);
-  res.header("Access-Control-Allow-Credentials", "false");
-  res.status(200).send();
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+  res.header("Access-Control-Allow-Credentials", "true");
+  next();
 });
 
 app.use(bodyParser.json());
@@ -192,9 +192,10 @@ app.post("/login", (req, res) => {
           const token = jwt.sign({ user_id, name, image, role, isVerified }, "jwt-secret-key", {
             expiresIn: "3d",
           });
-          res.cookie("token", token,{
-                     secure=true,
-                    sameSite=None});
+          res.cookie("token", token, {
+          secure: true,    // Set to true if your app is served over HTTPS
+          sameSite: "None", // Set to "None" for cross-site cookies
+            });
           return res.json({ Status: "Login Successful", token, user_id, name, image, role, isVerified });
         } else {
           return res.json({ Error: "Password error!" });
