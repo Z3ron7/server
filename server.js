@@ -3,8 +3,8 @@ const Database = require("./src/configs/Database");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
-const cors = require("cors");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const salt = 5;
 const nodemailer = require('nodemailer');
 const multer = require('multer');
@@ -14,7 +14,8 @@ const app = express();
 const corsOptions = {
   origin: "https://smartexamhub.vercel.app",
   methods: "GET,PUT,POST,DELETE",
-  credentials: true
+  credentials: true,
+  Access-Control-Allow-Credentials: true,
 };
 
 app.use(cors());
