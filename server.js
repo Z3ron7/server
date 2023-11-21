@@ -52,7 +52,7 @@ app.use(cookieParser());
 
 const db = new Database();
 const conn = db.pool;
-const publicPath = path.join(__dirname, '..', 'smart-exam-final', 'public', 'avatar');
+const publicPath = path.join(__dirname, 'avatar');
 
 const storage = multer.diskStorage({
   destination: function (req, file, callback) {
@@ -91,6 +91,11 @@ const verifyUser = (req, res, next) => {
     });
   }
 };
+
+app.get("/user", verifyUser, (req, res) => {
+  return res.json({ Status: "Success", name: req.name, image: req.image });
+});
+
 app.post('/register', upload.single('profileImage'), async (req, res) => {
   const { name, username, password, gender, status } = req.body;
   let imagePath = ''; // Initialize imagePath as null
@@ -98,7 +103,7 @@ app.post('/register', upload.single('profileImage'), async (req, res) => {
 
   if (req.file) {
     // Image has been uploaded
-    imagePath =  './avatar/' + req.file.originalname; // Path to the uploaded image
+    imagePath =  '/avatar/' + req.file.originalname; // Path to the uploaded image
   }
 
   try {
