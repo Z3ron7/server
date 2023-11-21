@@ -52,7 +52,7 @@ app.use(cookieParser());
 
 const db = new Database();
 const conn = db.pool;
-const publicPath = path.join(__dirname, 'avatar');
+const publicPath = path.join(__dirname, '..', 'smartexamhub', 'public', 'avatar');
 
 const storage = multer.diskStorage({
   destination: function (req, file, callback) {
