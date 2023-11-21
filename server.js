@@ -14,18 +14,17 @@ const app = express();
 const corsOptions = {
   origin: "https://smartexamhub.vercel.app",
   methods: "GET,PUT,POST,DELETE",
-  credentials: true,
-  Access-Control-Allow-Credentials: true,
+  credentials: false,
 };
 
-app.use(cors());
+app.use(cors(corsOptions));
 
 app.options("*", (req, res) => {
   console.log("Handling preflight request");
   const allowedHeaders = req.headers["access-control-request-headers"];
   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
   res.header("Access-Control-Allow-Headers", allowedHeaders);
-  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Credentials", "false");
   res.status(200).send();
 });
 
