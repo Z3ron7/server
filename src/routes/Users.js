@@ -6,50 +6,7 @@ const router = express.Router();
 const db = new Database();
 const conn = db.pool;
 const queryAsync = promisify(conn.query).bind(conn);
-app.post("/login", (req, res) => {
-  const sql = "SELECT * FROM users WHERE username = ?";
-  conn.query(sql, [req.body.username], (err, data) => {
-    if (err) {
-      return res.json({ Error: "Login error in server" });
-    }
-    if (data.length > 0) {
-      bcrypt.compare(req.body.password.toString(), data[0].password, (err, response) => {
-        if (err) {
-          return res.json({ Error: "Password compare error" });
-        }
-        if (response) {
-          const name = data[0].name;
-          const image = data[0].image;
-          let role = data[0].role; // Get the role from the database
-          const status = data[0].status; // Get the status from the database
-          const user_id = data[0].user_id;
 
-          // Check if the status is "student" or "alumni" and set the role accordingly
-          if (status === "student" || status === "alumni") {
-            role = "Exam-taker";
-          }
-
-          // Here, you can check the verification status from the database
-          const isVerified = data[0].isVerified; // Assuming you have an "isVerified" column
-
-          // Include the isVerified status in the token payload
-          const token = jwt.sign({ user_id, name, image, role, isVerified }, "jwt-secret-key", {
-            expiresIn: "3d",
-          });
-          res.cookie("token", token, {
-          secure: true, // Ensures the cookie is sent only over HTTPS
-          sameSite: 'None',
-  });
-          return res.json({ Status: "Login Successful", token, user_id, name, image, role, isVerified });
-        } else {
-          return res.json({ Error: "Password error!" });
-        }
-      });
-    } else {
-      return res.json({ Error: "Invalid username or password!" });
-    }
-  });
-});
 router.get('/users', async (req, res) => {
   try {
     const query = 'SELECT user_id, name, gender, username, status, image FROM users WHERE status IN (?, ?) AND isVerified = ?';
