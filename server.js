@@ -17,7 +17,7 @@ const corsOptions = {
   credentials: true
 };
 
-app.use(cors(corsOptions));
+app.use(cors());
 
 app.options("*", (req, res) => {
   console.log("Handling preflight request");
