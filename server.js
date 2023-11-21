@@ -14,22 +14,32 @@ const app = express();
 const corsOptions = {
   origin: "https://smartexamhub.vercel.app",
   methods: "GET,PUT,POST,DELETE",
+  allowedHeaders: [
+    'Origin',
+    'X-Requested-With',
+    'Content-Type',
+    'Accept',
+    'x-client-key',
+    'x-client-token',
+    'x-client-secret',
+    'Authorization',
+  ],
   credentials: true,
 };
 
 app.use(cors(corsOptions));
 
-app.use((req, res, next) => {
+app.option("*",(req, res) => {
   console.log('Request received:', req.method, req.url);
   res.header("Access-Control-Allow-Origin", "https://smartexamhub.vercel.app");
   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
+  res.header("Access-Control-Allow-Headers", "Authorization");
+  res.header("Access-Control-Allow-Headers", "Accept");
+  res.header("Access-Control-Allow-Headers", "x-client-token");
+  res.header("Access-Control-Allow-Headers", "x-client-secret");
   res.header("Access-Control-Allow-Credentials", "true");
-  next();
+  res.status(200).send();
 });
-
-app.use(bodyParser.json());
-
 
 const examsRouter = require("./src/routes/Exam");
 const questionsRouter = require("./src/routes/Questions"); // Add this
