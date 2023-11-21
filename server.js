@@ -14,16 +14,6 @@ const app = express();
 const corsOptions = {
   origin: "https://smartexamhub.vercel.app",
   methods: "GET,PUT,POST,DELETE",
-  allowedHeaders: [
-    'Origin',
-    'X-Requested-With',
-    'Content-Type',
-    'Accept',
-    'x-client-key',
-    'x-client-token',
-    'x-client-secret',
-    'Authorization',
-  ],
   credentials: true,
 };
 
