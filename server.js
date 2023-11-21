@@ -40,6 +40,7 @@ app.option("*",(req, res) => {
   res.header("Access-Control-Allow-Credentials", "true");
   res.status(200).send();
 });
+app.use(bodyParser.json());
 
 const examsRouter = require("./src/routes/Exam");
 const questionsRouter = require("./src/routes/Questions"); // Add this
