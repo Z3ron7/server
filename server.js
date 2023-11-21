@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-const bodyParser = require("body-parser");
 const salt = 5;
 const nodemailer = require('nodemailer');
 const multer = require('multer');
@@ -35,8 +34,6 @@ app.options("*", (req, res) => {
   res.status(200).send();
 });
 
-app.use(bodyParser.json());
-
 const examsRouter = require("./src/routes/Exam");
 const questionsRouter = require("./src/routes/Questions"); // Add this
 const roomRouter = require("./src/routes/Room"); // Add this
@@ -58,7 +55,7 @@ app.use(cookieParser());
 
 const db = new Database();
 const conn = db.pool;
-const publicPath = path.join(__dirname, '..', 'smart-exam-final', 'public', 'avatar');
+const publicPath = path.join(__dirname, 'avatar');
 
 const storage = multer.diskStorage({
   destination: function (req, file, callback) {
@@ -97,7 +94,7 @@ const verifyUser = (req, res, next) => {
     });
   }
 };
-app.get("/", verifyUser, (req, res) => {
+app.get("/user", verifyUser, (req, res) => {
   return res.json({ Status: "Success", name: req.name, image: req.image });
 });
 
@@ -108,7 +105,7 @@ app.post('/register', upload.single('profileImage'), async (req, res) => {
 
   if (req.file) {
     // Image has been uploaded
-    imagePath =  './avatar/' + req.file.originalname; // Path to the uploaded image
+    imagePath =  '/avatar/' + req.file.originalname; // Path to the uploaded image
   }
 
   try {
@@ -233,5 +230,10 @@ app.get("/fetch-user", verifyUser, async (req, res) => {
   }
 });
 
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, function () {
+  const db = new Database();
+  db.testConnection();
+  console.log(`Server is running on port ${PORT}`);
+});
 
-app.listen();
