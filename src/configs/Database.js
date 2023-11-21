@@ -10,7 +10,9 @@ class Database {
       user: DB_USER,
       password: DB_PASSWORD,
       database: DB_NAME,
-      connectionLimit: 10,
+      waitForConnections: true,
+      connectionLimit: 10, // Adjust this based on your needs
+      queueLimit: 0
     });
   }
 

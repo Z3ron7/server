@@ -3,6 +3,7 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
 const cors = require("cors");
 const salt = 5;
 const nodemailer = require('nodemailer');
@@ -10,29 +11,25 @@ const multer = require('multer');
 const path = require('path');
 
 const app = express();
-app.use(express.json());
 const corsOptions = {
- origin: 'https://smartexamhub.vercel.app',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: "https://smartexamhub.vercel.app",
+  methods: "GET,PUT,POST,DELETE",
   credentials: true,
- optionsSuccessStatus: 204,
+  optionsSuccessStatus: 204,
 };
 
 app.use(cors(corsOptions));
 
-app.options("*", (req, res) => {
-  console.log("Handling preflight request");
+app.options("https://smartexamhub.vercel.app", (req, res) => {
+  console.log('Request received:', req.method, req.url);
+  res.header("Access-Control-Allow-Origin", "https://smartexamhub.vercel.app");
   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
   res.header("Access-Control-Allow-Headers", "Content-Type");
- res.header("Access-Control-Allow-Headers", "Athorization");
- res.header("Access-Control-Allow-Headers", "Accept");
- res.header("Access-Control-Allow-Headers", "X-Requested-With");
- res.header("Access-Control-Allow-Headers", "x-client-token");
- res.header("Access-Control-Allow-Headers", "x-client-secret");
- res.header("Access-Control-Allow-Headers", "x-client-key");
   res.header("Access-Control-Allow-Credentials", "true");
   res.status(200).send();
 });
+
+app.use(bodyParser.json());
 
 const examsRouter = require("./src/routes/Exam");
 const questionsRouter = require("./src/routes/Questions"); // Add this
@@ -94,6 +91,7 @@ const verifyUser = (req, res, next) => {
     });
   }
 };
+
 app.get("/user", verifyUser, (req, res) => {
   return res.json({ Status: "Success", name: req.name, image: req.image });
 });
@@ -199,8 +197,10 @@ app.post("/login", (req, res) => {
           const token = jwt.sign({ user_id, name, image, role, isVerified }, "jwt-secret-key", {
             expiresIn: "3d",
           });
-          res.cookie("token", token);
-
+          res.cookie("token", token, {
+          secure: true,    // Set to true if your app is served over HTTPS
+          sameSite: "None", // Set to "None" for cross-site cookies
+            });
           return res.json({ Status: "Login Successful", token, user_id, name, image, role, isVerified });
         } else {
           return res.json({ Error: "Password error!" });
