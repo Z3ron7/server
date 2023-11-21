@@ -19,13 +19,13 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.option("*",(req, res) => {
+app.use((req, res, next) => {
   console.log('Request received:', req.method, req.url);
   res.header("Access-Control-Allow-Origin", "https://smartexamhub.vercel.app");
   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
   res.header("Access-Control-Allow-Headers", "Content-Type"),
   res.header("Access-Control-Allow-Credentials", "true");
-  res.status(200).send();
+  next()
 });
 app.use(bodyParser.json());
 
