@@ -2,8 +2,6 @@ const Database = require("./src/configs/Database");
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const AWS = require('aws-sdk');
-const s3 = new AWS.S3();
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -54,11 +52,19 @@ app.use(cookieParser());
 
 const db = new Database();
 const conn = db.pool;
+const publicPath = path.join(__dirname, 'avatar');
 
-
-const upload = multer({
-  storage: multer.memoryStorage(), // Use memory storage to handle file as buffer
+const storage = multer.diskStorage({
+  destination: function (req, file, callback) {
+    callback(null, publicPath); 
+  },
+  filename: function (req, file, callback) {
+    callback(null, file.originalname); // Use the original filename as the stored filename
+  },
 });
+
+
+const upload = multer({ storage: storage });
 
 const transporter = nodemailer.createTransport({
   service: 'Gmail', // Replace with your email service provider
@@ -92,14 +98,13 @@ app.get("/user", verifyUser, (req, res) => {
 
 app.post('/register', upload.single('profileImage'), async (req, res) => {
   const { name, username, password, gender, status,school_id } = req.body;
-  const uploadParams = {
-    Bucket: process.env.BUCKET,
-    Key: `avatar/${req.file.originalname}`,
-    Body: req.file.buffer,
-    ContentType: req.file.mimetype,
-  };
+  let imagePath = ''; // Initialize imagePath as null
 
-  const s3UploadResponse = await s3.upload(uploadParams).promise();
+
+  if (req.file) {
+    // Image has been uploaded
+    imagePath =  '/avatar/' + req.file.originalname; // Path to the uploaded image
+  }
 
   try {
     // Validate incoming data
@@ -138,7 +143,7 @@ app.post('/register', upload.single('profileImage'), async (req, res) => {
     // Insert user into the database, including the imagePath
     const insertQuery =
       'INSERT INTO users (name, username, password, gender, role, status, school_id, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-    const values = [name, username, hashedPassword, gender, role, status, school_id, s3UploadResponse.Location];
+    const values = [name, username, hashedPassword, gender, role, status, school_id, imagePath];
 
     conn.query(insertQuery, values, (err, result) => {
       if (err) {
