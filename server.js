@@ -54,8 +54,6 @@ app.use(cookieParser());
 
 const db = new Database();
 const conn = db.pool;
-const publicPath = path.join(__dirname, 'avatar');
-
 
 
 const upload = multer({
