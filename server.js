@@ -121,7 +121,31 @@ app.post('/register', upload.single('profileImage'), async (req, res) => {
     if (usernameExists) {
       return res.status(400).json({ Error: "Username already exists" });
     }
+// Check if the school_id already exists
+    const schoolIdExists = await new Promise((resolve, reject) => {
+      const checkSchoolIdQuery = 'SELECT COUNT(*) as count FROM users WHERE school_id = ?';
+      conn.query(checkSchoolIdQuery, [school_id], (err, result) => {
+        if (err) reject(err);
+        resolve(result && result[0] && result[0].count > 0);
+      });
+    }).catch((error) => {
+      console.error('Promise rejected:', error);
+      throw error;
+    });
 
+    if (schoolIdExists) {
+      return res.status(400).json({ Error: "School ID already exists" });
+    }
+
+    // Check if the password is at least 8 characters long
+    if (password.length < 8) {
+      return res.status(400).json({ Error: "Password must be at least 8 characters long" });
+    }
+
+    // Check if the password and confirmation password match
+    if (password !== req.body.password_confirmation) {
+      return res.status(400).json({ Error: "Password and confirmation password do not match" });
+    }
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, salt);
 
