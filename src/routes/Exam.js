@@ -253,13 +253,16 @@ router.get('/fetch-user-exam', async (req, res) => {
     // Replace 'userId' with the actual user ID for whom you want to fetch exams
 
     const userExams = await queryAsync(query, [userId]);
+
     // Fetch the score for the user
     const scoreQuery = `
       SELECT score FROM user_exams WHERE user_id = ?;
     `;
 
     const scoreResult = await queryAsync(scoreQuery, [userId]);
-    const score = scoreResult[0].score;
+
+    // Check if scoreResult is not empty before accessing its properties
+    const score = scoreResult.length > 0 ? JSON.parse(scoreResult[0].score) : {};
 
     res.json({ userExams, score });
   } catch (error) {

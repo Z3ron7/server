@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const salt = 5;
 const nodemailer = require('nodemailer');
+const cloudinary = require('cloudinary').v2;
 const multer = require('multer');
 const path = require('path');
 
@@ -52,20 +53,19 @@ app.use(cookieParser());
 
 const db = new Database();
 const conn = db.pool;
-const publicPath = path.join(__dirname, 'avatar');
 
-const storage = multer.diskStorage({
-  destination: function (req, file, callback) {
-    callback(null, publicPath); 
-  },
-  filename: function (req, file, callback) {
-    callback(null, file.originalname); // Use the original filename as the stored filename
-  },
+cloudinary.config({ 
+  cloud_name: 'dypkdhywa', 
+  api_key: '214244336281555', 
+  api_secret: 'rbwylTa-n0OWPj0EqM9wL9P-BHI' 
 });
 
-
-const upload = multer({ storage: storage });
-
+const storage = multer.diskStorage({
+  filename: function (req, file, cb) {
+    cb(null, file.originalname); // Use the original file name
+  }
+});
+const upload = multer ({ storage: storage})
 const transporter = nodemailer.createTransport({
   service: 'Gmail', // Replace with your email service provider
   auth: {
@@ -97,14 +97,8 @@ app.get("/user", verifyUser, (req, res) => {
 });
 
 app.post('/register', upload.single('profileImage'), async (req, res) => {
-  const { name, username, password, gender, status,school_id } = req.body;
+  const { name, username, password, gender, status, school_id } = req.body;
   let imagePath = ''; // Initialize imagePath as null
-
-
-  if (req.file) {
-    // Image has been uploaded
-    imagePath =  '/avatar/' + req.file.originalname; // Path to the uploaded image
-  }
 
   try {
     // Validate incoming data
@@ -130,6 +124,17 @@ app.post('/register', upload.single('profileImage'), async (req, res) => {
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Image upload to Cloudinary
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        width: 150,
+        height: 100,
+        crop: 'fill',
+      });
+
+      imagePath = result.url; // Save the Cloudinary URL to the imagePath
+    }
 
     // Set the role based on the status
     let role = 'Exam-taker'; // Default role

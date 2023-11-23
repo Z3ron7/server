@@ -2,10 +2,20 @@ const { promisify } = require('util');
 const express = require("express")
 const Database = require("../configs/Database");
 const router = express.Router();
-
+const cloudinary = require('cloudinary').v2;
+const multer = require('multer');
 const db = new Database();
 const conn = db.pool;
 const queryAsync = promisify(conn.query).bind(conn);
+const path = require('path');
+
+const storage = multer.diskStorage({
+  filename: function (req, file, callback) {
+    callback(null, file.originalname); // Use the original filename as the stored filename
+  },
+});
+
+const upload = multer({ storage: storage });
 
 router.get('/users', async (req, res) => {
   try {
@@ -20,7 +30,6 @@ router.get('/users', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while fetching data' });
   }
 });
-
 
 router.get('/users/:user_id', async (req, res) => {
   const userId = req.params.user_id; // Retrieve the userId from the URL parameters
@@ -41,34 +50,66 @@ router.get('/users/:user_id', async (req, res) => {
   }
 });
 
-router.put('/users/:user_id', async (req, res) => {
+router.put('/users/:user_id', upload.single('image'), async (req, res) => {
   const userId = req.params.user_id; // Retrieve the userId from the URL parameters
-  const updatedUserData = req.body; // Retrieve the updated user data from the request body
+  const { name, username } = req.body; // Extract updated fields from the request body
+  let image = ''; // Initialize imagePath as null
 
   try {
-    const query = 'UPDATE users SET name = ?, gender = ?, username = ?, status = ?, image = ?, isVerified = ? WHERE user_id = ?';
-    
-    const result = await queryAsync(query, [
-      updatedUserData.name,
-      updatedUserData.gender,
-      updatedUserData.username,
-      updatedUserData.status,
-      updatedUserData.image,
-      updatedUserData.isVerified,
-      userId
-    ]);
-    
-    if (result.affectedRows === 0) {
+    // Check if at least one of the fields is provided for updating
+    if (!name && !username) {
+      return res.status(400).json({ message: 'No fields provided for update' });
+    }
+
+    let updateFields = [];
+    let updateValues = [];
+// Image upload to Cloudinary
+if (req.file) {
+  const result = await cloudinary.uploader.upload(req.file.path, {
+    width: 150,
+    height: 100,
+    crop: 'fill',
+  });
+
+  imagePath = result.url; // Save the Cloudinary URL to the imagePath
+}
+    // Build the SQL query dynamically based on the provided fields
+    if (name) {
+      updateFields.push('name = ?');
+      updateValues.push(name);
+    }
+
+    if (image) {
+      updateFields.push('image = ?');
+      updateValues.push(image); // Save the image path
+    }
+
+    if (username) {
+      updateFields.push('username = ?');
+      updateValues.push(username);
+    }
+    // Construct the final SQL query
+    const query = `UPDATE users SET ${updateFields.join(', ')} WHERE user_id = ?`;
+
+    // Add the userId to the updateValues array
+    updateValues.push(userId);
+
+    // Execute the update query
+    await queryAsync(query, updateValues);
+
+    // Fetch and return the updated user data
+    const updatedUser = await queryAsync('SELECT user_id, name, gender, username, status, image, isVerified FROM users WHERE user_id = ?', [userId]);
+
+    if (updatedUser.length === 0) {
       res.status(404).json({ message: 'User not found' });
     } else {
-      res.json({ message: 'User data updated successfully' });
+      res.json(updatedUser[0]);
     }
   } catch (error) {
     console.error('Error updating user data:', error);
-    res.status(500).json({ error: 'An error occurred while updating user data' });
+    res.status(500).json({ error: 'An error occurred while updating data' });
   }
 });
-
   
   router.delete('/users/:user_id', async (req, res) => {
     try {
