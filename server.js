@@ -107,7 +107,7 @@ app.post('/register', upload.single('profileImage'), async (req, res) => {
     }
 
     // Check if the username already exists
-    const username = await new Promise((resolve, reject) => {
+    const usernameExists = await new Promise((resolve, reject) => {
       const checkQuery = 'SELECT COUNT(*) as count FROM users WHERE username = ?';
       conn.query(checkQuery, [username], (err, result) => {
         if (err) reject(err);
@@ -118,11 +118,11 @@ app.post('/register', upload.single('profileImage'), async (req, res) => {
       throw error;
     });
 
-    if (username) {
+    if (usernameExists) {
       return res.status(400).json({ Error: "Username already exists" });
     }
 // Check if the school_id already exists
-    const school_id = await new Promise((resolve, reject) => {
+    const schoolIdExists = await new Promise((resolve, reject) => {
       const checkSchoolIdQuery = 'SELECT COUNT(*) as count FROM users WHERE school_id = ?';
       conn.query(checkSchoolIdQuery, [school_id], (err, result) => {
         if (err) reject(err);
@@ -133,7 +133,7 @@ app.post('/register', upload.single('profileImage'), async (req, res) => {
       throw error;
     });
 
-    if (school_id) {
+    if (schoolIdExists) {
       return res.status(400).json({ Error: "School ID already exists" });
     }
 
