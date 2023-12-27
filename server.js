@@ -10,10 +10,11 @@ const nodemailer = require('nodemailer');
 const cloudinary = require('cloudinary').v2;
 const multer = require('multer');
 const path = require('path');
+const crypto = require('crypto');
 
 const app = express();
 const corsOptions = {
-  origin: "https://smartexamhub.vercel.app",
+  origin: "http://localhost:3000",
   methods: "GET,PUT,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,
@@ -21,9 +22,9 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.options("https://smartexamhub.vercel.app", (req, res) => {
+app.options("http://localhost:3000", (req, res) => {
   console.log('Request received:', req.method, req.url);
-  res.header("Access-Control-Allow-Origin", "https://smartexamhub.vercel.app");
+  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
   res.header("Access-Control-Allow-Headers", "Content-Type");
   res.header("Access-Control-Allow-Credentials", "true");
@@ -67,10 +68,10 @@ const storage = multer.diskStorage({
 });
 const upload = multer ({ storage: storage})
 const transporter = nodemailer.createTransport({
-  service: 'Gmail', // Replace with your email service provider
+  service: 'gmail', // Replace with your email service provider
   auth: {
-    user: 'zoren.panilagao1@gmail.com', // Replace with your email
-    pass: 'yvij frwd swws udms', // Replace with your email password
+    user: 'smartexamhub@gmail.com', // Replace with your email
+    pass: 'pjfm gnwl hdwd rvfc', // Replace with your email password
   },
 });
 
@@ -95,7 +96,6 @@ const verifyUser = (req, res, next) => {
 app.get("/user", verifyUser, (req, res) => {
   return res.json({ Status: "Success", name: req.name, image: req.image });
 });
-
 app.post('/register', upload.single('profileImage'), async (req, res) => {
   const { name, username, password, gender, status, school_id } = req.body;
   let imagePath = ''; // Initialize imagePath as null
@@ -106,10 +106,39 @@ app.post('/register', upload.single('profileImage'), async (req, res) => {
       return res.status(400).json({ Error: "Missing required fields" });
     }
 
-    
-    // Check if the password is at least 8 characters long
-    if (password.length < 8) {
-      return res.status(400).json({ Error: "Password must be at least 8 characters long" });
+    // Function to check if a username already exists
+    const checkIfUsernameExists = async (username) => {
+      return new Promise((resolve, reject) => {
+        const checkUsernameQuery = 'SELECT COUNT(*) as count FROM users WHERE username = ?';
+        conn.query(checkUsernameQuery, [username], (err, result) => {
+          if (err) {
+            reject(err);
+          }
+          resolve(result && result[0] && result[0].count > 0);
+        });
+      });
+    };
+    const usernameExists = await checkIfUsernameExists(username);
+    if (usernameExists) {
+      return res.json({ Error: "Username already exists" });
+    }
+
+    // Function to check if a school ID already exists
+    const checkIfSchoolIdExists = async (schoolId) => {
+      return new Promise((resolve, reject) => {
+        const checkSchoolIdQuery = 'SELECT COUNT(*) as count FROM users WHERE school_id = ?';
+        conn.query(checkSchoolIdQuery, [schoolId], (err, result) => {
+          if (err) {
+            reject(err);
+          }
+          resolve(result && result[0] && result[0].count > 0);
+        });
+      });
+    };
+
+    const schoolIdExists = await checkIfSchoolIdExists(school_id);
+    if (schoolIdExists) {
+      return res.json({ Error: "School ID already exists" });
     }
 
     // Hash the password
@@ -145,11 +174,11 @@ app.post('/register', upload.single('profileImage'), async (req, res) => {
         console.error("Error inserting user:", err);
         return res.status(500).json({ Error: "Failed to insert user" });
       }
-
+      
       // Send an email to the Super Admin for verification
       transporter.sendMail({
-        from: 'zoren.panilagao1@gmail.com', // Replace with your email
-        to: 'zoren.panilagao7@gmail.com', // Replace with the Super Admin's email
+        from: 'smartexamhub@gmail.com', // Replace with your email
+        to: 'zoren.panilagao1@gmailcom', // Replace with the Super Admin's email
         subject: 'New Exam-taker Registration',
         text: 'A new Exam-taker has registered and requires verification.',
       });
@@ -161,6 +190,7 @@ app.post('/register', upload.single('profileImage'), async (req, res) => {
     res.status(500).json({ Error: "Registration process failed" });
   }
 });
+
 
 app.post("/login", (req, res) => {
   const sql = "SELECT * FROM users WHERE username = ?";
@@ -212,18 +242,76 @@ app.get('/logout', (req, res) => {
   return res.json({Status: "Success"});
  })
 
-// Add a new route to fetch user data for the currently logged-in user
-app.get("/fetch-user", verifyUser, async (req, res) => {
-  const userId = req.user_id; // Retrieve the user ID from req.user
+app.post('/forgot-password', async (req, res) => {
   try {
-    // Query the database to fetch user data based on the user ID
-    const userData = await db.one("SELECT * FROM users WHERE user_id = $1", userId);
-    res.json(userData);
+    const { username } = req.body;
+    const getUserByUsername = async (username) => {
+      try {
+        const query = 'SELECT * FROM users WHERE username = ?';
+        const [rows] = await conn.promise().query(query, [username]);
+    
+        if (rows.length > 0) {
+          return rows[0]; // Assuming you want to return the first user with the given username
+        } else {
+          return null; // Return null if no user is found
+        }
+      } catch (error) {
+        console.error('Error fetching user by username:', error);
+        throw error;
+      }
+    };
+    // Check if the user with the given username exists
+    const user = await getUserByUsername(username);
+
+    if (!user) {
+      return res.status(404).json({ Error: 'User not found' });
+    }
+
+    // Generate a unique token for the password reset link
+    const resetToken = crypto.randomBytes(20).toString('hex');
+
+    // Save the reset token in the database
+    const saveResetToken = async (userId, resetToken) => {
+      try {
+        await conn.promise().query('UPDATE users SET reset_token = ? WHERE user_id = ?', [resetToken, userId]);
+      } catch (error) {
+        console.error('Error saving reset token:', error);
+        throw error;
+      }
+    };
+    await saveResetToken(user.user_id, resetToken);
+
+    // Send a password reset email to the user
+    const sendPasswordResetEmail = (username, resetToken) => {
+      // Define the email content
+      console.log('Recipient email:', username);
+      const mailOptions = {
+        from: 'smartexamhub@gmail.com', // Replace with your email
+        to: username,
+        subject: 'Password Reset Request',
+        text: `Click the following link to reset your password: https://localhost:3000/reset-password/${resetToken}`,
+      };
+
+      // Send the email
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Email sending error:', error);
+        } else {
+          console.log('Email sent:', info.response);
+        }
+      });
+    };
+
+    // Call the function to send the password reset email
+    sendPasswordResetEmail(user.username, resetToken);
+
+    return res.json({ Status: 'Password reset link sent successfully' });
   } catch (error) {
-    console.error("Error fetching user data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error('Forgot password error:', error);
+    res.status(500).json({ Error: 'Forgot password process failed' });
   }
 });
+
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, function () {
