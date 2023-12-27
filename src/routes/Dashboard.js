@@ -9,26 +9,24 @@ const conn = db.pool;
 const queryAsync = promisify(conn.query).bind(conn);
 
 router.get('/fetch-latest', async (req, res) => {
-  const user_id = req.query.userId; // Use req.query to access the query parameter
+  const user_id = req.query.userId;
   const limit = parseInt(req.query.limit, 10) || 1; // Default limit is 1 if not specified
 
   try {
-    // Define a SQL query to fetch the latest activity from both tables, limited to the specified limit
     const query = `
-      SELECT * FROM (SELECT user_id, program_id, competency_id, 
-                    end_time, score 
-                    FROM user_exams
-                    WHERE user_id = ?
-                    UNION
-                    SELECT user_id, program_id, competency_id, 
-                    end_time, score 
-                    FROM exam_room) AS combined
+      SELECT * FROM (
+        SELECT user_id, program_id, competency_id, end_time, score 
+        FROM user_exams
+        WHERE user_id = ?
+        UNION
+        SELECT user_id, program_id, competency_id, end_time, score 
+        FROM exam_room
+        WHERE user_id = ?
+      ) AS combined
       ORDER BY end_time DESC
       LIMIT ?;`;
-  
-    const latestActivity = await queryAsync(query, [user_id, limit]);
-
-    // Set the score variable to the score field of the first record
+      console.log('Parameters:', [user_id, user_id, limit]);
+    const latestActivity = await queryAsync(query, [user_id, user_id, limit]);
     const score = latestActivity.length > 0 ? latestActivity[0].score : null;
 
     res.json({ latestActivity, score });
