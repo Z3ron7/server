@@ -14,7 +14,7 @@ const crypto = require('crypto');
 
 const app = express();
 const corsOptions = {
-  origin: "https://smartexam.cyclic.app",
+  origin: "https://smartexamhub.vercel.app",
   methods: "GET,PUT,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,
@@ -22,9 +22,9 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.options("https://smartexam.cyclic.app", (req, res) => {
+app.options("https://smartexamhub.vercel.app", (req, res) => {
   console.log('Request received:', req.method, req.url);
-  res.header("Access-Control-Allow-Origin", "https://smartexam.cyclic.app");
+  res.header("Access-Control-Allow-Origin", "https://smartexamhub.vercel.app");
   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
   res.header("Access-Control-Allow-Headers", "Content-Type");
   res.header("Access-Control-Allow-Credentials", "true");
