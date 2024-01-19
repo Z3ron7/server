@@ -242,7 +242,7 @@ app.get('/logout', (req, res) => {
   return res.json({Status: "Success"});
  })
 
-app.post('/forgot-password', async (req, res) => {
+ app.post('/forgot-password', async (req, res) => {
   try {
     const { username } = req.body;
     const getUserByUsername = async (username) => {
@@ -260,6 +260,7 @@ app.post('/forgot-password', async (req, res) => {
         throw error;
       }
     };
+    
     // Check if the user with the given username exists
     const user = await getUserByUsername(username);
 
@@ -279,6 +280,7 @@ app.post('/forgot-password', async (req, res) => {
         throw error;
       }
     };
+    
     await saveResetToken(user.user_id, resetToken);
 
     // Send a password reset email to the user
@@ -289,7 +291,7 @@ app.post('/forgot-password', async (req, res) => {
         from: 'smartexamhub@gmail.com', // Replace with your email
         to: username,
         subject: 'Password Reset Request',
-        text: `Click the following link to reset your password: https://localhost:3000/reset-password/${resetToken}`,
+        text: `Click the following link to reset your password: https://smartexamhub.vercel.app/reset-password/${resetToken}`,
       };
 
       // Send the email
@@ -304,14 +306,62 @@ app.post('/forgot-password', async (req, res) => {
 
     // Call the function to send the password reset email
     sendPasswordResetEmail(user.username, resetToken);
-
-    return res.json({ Status: 'Password reset link sent successfully' });
+    
+    return res.json({ Status: 'Password reset link sent successfully', resetToken});
   } catch (error) {
     console.error('Forgot password error:', error);
-    res.status(500).json({ Error: 'Forgot password process failed' });
+    return res.status(500).json({ Error: 'Forgot password process failed' });
   }
 });
 
+
+app.post('/reset-password', async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    // Validate incoming data
+    if (!token || !newPassword) {
+      return res.status(400).json({ Error: 'Missing required fields' });
+    }
+
+    // Function to get user by reset token
+    const getUserByResetToken = async (resetToken) => {
+      return new Promise((resolve, reject) => {
+        const query = 'SELECT * FROM users WHERE reset_token = ?';
+        conn.query(query, [resetToken], (err, result) => {
+          if (err) {
+            reject(err);
+          }
+          resolve(result && result[0]);
+        });
+      });
+    };
+
+    // Check if the reset token is valid
+    const user = await getUserByResetToken(token);
+    if (!user) {
+      return res.status(404).json({ Error: 'Invalid reset token' });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update the user's password and clear the reset token
+    const updatePasswordQuery = 'UPDATE users SET password = ?, reset_token = NULL WHERE user_id = ?';
+    const updatePasswordValues = [hashedPassword, user.user_id];
+    conn.query(updatePasswordQuery, updatePasswordValues, (err, result) => {
+      if (err) {
+        console.error('Error updating password:', err);
+        return res.status(500).json({ Error: 'Failed to update password' });
+      }
+
+      return res.json({ Status: 'Password reset successfully' });
+    });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ Error: 'Reset password process failed' });
+  }
+});
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, function () {
