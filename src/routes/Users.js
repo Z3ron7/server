@@ -19,7 +19,7 @@ const upload = multer({ storage: storage });
 
 router.get('/users', async (req, res) => {
   try {
-    const query = 'SELECT user_id, name, gender, username, status, image FROM users WHERE status IN (?, ?) AND isVerified = ?';
+    const query = 'SELECT user_id, name, gender, username, status, image, school_id FROM users WHERE status IN (?, ?) AND isVerified = ?';
     const statusFilter = ['student', 'alumni'];
     const isVerifiedValue = 1; // 1 for true
 
@@ -35,7 +35,7 @@ router.get('/users/:user_id', async (req, res) => {
   const userId = req.params.user_id; // Retrieve the userId from the URL parameters
 
   try {
-    const query = 'SELECT user_id, name, gender, username, status, image, isVerified FROM users WHERE user_id = ?';
+    const query = 'SELECT user_id, name, gender, username, status, image, school_id, isVerified FROM users WHERE user_id = ?';
     
     const user = await queryAsync(query, [userId]);
     
@@ -98,7 +98,7 @@ if (req.file) {
     await queryAsync(query, updateValues);
 
     // Fetch and return the updated user data
-    const updatedUser = await queryAsync('SELECT user_id, name, gender, username, status, image, isVerified FROM users WHERE user_id = ?', [userId]);
+    const updatedUser = await queryAsync('SELECT user_id, name, gender, username, status, image, school_id, isVerified FROM users WHERE user_id = ?', [userId]);
 
     if (updatedUser.length === 0) {
       res.status(404).json({ message: 'User not found' });

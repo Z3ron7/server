@@ -87,6 +87,7 @@ const verifyUser = (req, res, next) => {
           req.user_id = decoded.user_id, // Attach user_id to req.user
           req.name = decoded.name, // Attach other user data if needed
           req.image = decoded.image,
+          req.school_id = decoded.school_id,
         next();
       }
     });
@@ -94,7 +95,7 @@ const verifyUser = (req, res, next) => {
 };
 
 app.get("/user", verifyUser, (req, res) => {
-  return res.json({ Status: "Success", name: req.name, image: req.image });
+  return res.json({ Status: "Success", name: req.name, image: req.image, school_id: req.school_id });
 });
 app.post('/register', upload.single('profileImage'), async (req, res) => {
   const { name, username, password, gender, status, school_id } = req.body;
@@ -209,6 +210,7 @@ app.post("/login", (req, res) => {
           let role = data[0].role; // Get the role from the database
           const status = data[0].status; // Get the status from the database
           const user_id = data[0].user_id;
+          const school_id = data[0].school_id;
 
           // Check if the status is "student" or "alumni" and set the role accordingly
           if (status === "student" || status === "alumni") {
@@ -219,14 +221,14 @@ app.post("/login", (req, res) => {
           const isVerified = data[0].isVerified; // Assuming you have an "isVerified" column
 
           // Include the isVerified status in the token payload
-          const token = jwt.sign({ user_id, name, image, role, isVerified }, "jwt-secret-key", {
+          const token = jwt.sign({ user_id, name, image, role, isVerified, school_id }, "jwt-secret-key", {
             expiresIn: "3d",
           });
           res.cookie("token", token, {
           secure: true,    // Set to true if your app is served over HTTPS
           sameSite: "None", // Set to "None" for cross-site cookies
             });
-          return res.json({ Status: "Login Successful", token, user_id, name, image, role, isVerified });
+          return res.json({ Status: "Login Successful", token, user_id, name, image, role, isVerified, school_id });
         } else {
           return res.json({ Error: "Password error!" });
         }
