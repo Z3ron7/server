@@ -9,21 +9,10 @@ const cors = require("cors");
 const db = new Database();
 const conn = db.pool;
 const queryAsync = promisify(conn.query).bind(conn);
-const corsOptions = {
-  origin: "https://smartexamhub.vercel.app",
-  methods: "GET,PUT,POST,DELETE",
-  credentials: true,
-  optionsSuccessStatus: 204,
-};
+const app = express();
 
-router.options("/", (req, res) => {
-  console.log('Request received:', req.method, req.url);
-  res.header("Access-Control-Allow-Origin", "https://smartexamhub.vercel.app");
-res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
-res.header("Access-Control-Allow-Credentials", "true");
-  res.status(200).send();
-});
+app.use(cors()); // Allow all origins, you can configure this as needed
+app.use(bodyParser.json());
 
 const transporter = nodemailer.createTransport({
   service: 'Gmail', // Replace with your email service provider
