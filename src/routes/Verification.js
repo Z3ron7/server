@@ -66,7 +66,7 @@ router.get('/unverified-users', async (req, res) => {
   
       // Send an email to the user
       transporter.sendMail({
-        from: 'zoren.panilagao1@gmail.com', // Replace with your email
+        from: 'smartexamhub@gmail.com', // Replace with your email
         to: userEmail, // Use the user's email
         subject: 'Verification Complete',
         text: 'Your account has been verified and is now active.',
@@ -106,7 +106,7 @@ router.get('/unverified-users', async (req, res) => {
       // Send an email to the user with the OTP and verification link
       const verificationLink = `https://smartexamhub.vercel.app/verify/${userId}/${otp}`; // Replace with your domain
       transporter.sendMail({
-        from: 'zoren.panilagao1@gmail.com', // Replace with your email
+        from: 'smartexamhub@gmail.com', // Replace with your email
         to: userEmail,
         subject: 'Account Verification',
         text: `Your OTP is: ${otp}. Click the following link to verify your account: ${verificationLink}`,
