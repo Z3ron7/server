@@ -13,8 +13,15 @@ const path = require('path');
 const crypto = require('crypto');
 
 const app = express();
+const corsOptions = {
+  origin: "https://smartexamhub.vercel.app",
+  methods: "GET,PUT,POST,DELETE",
+  allowedHeaders: "Content-Type",
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
 
-app.use(cors);
+app.use(cors(corsOptions));
 app.options("https://smartexamhub.vercel.app", (req, res) => {
   console.log('Request received:', req.method, req.url);
   res.header("Access-Control-Allow-Origin", "https://smartexamhub.vercel.app");
