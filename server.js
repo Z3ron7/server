@@ -14,7 +14,7 @@ const crypto = require('crypto');
 
 const app = express();
 const corsOptions = {
-  origin: "https://smartexamhub.vercel.app",
+  origin: "*",
   methods: "GET,PUT,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,
