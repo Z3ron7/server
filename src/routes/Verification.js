@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport({
   service: 'gmail', // Replace with your email service provider
   auth: {
     user: 'smartexamhub@gmail.com', // Replace with your email
-    pass: 'pjfm gnwl hdwd rvfc', // Replace with your email password
+    pass: 'voew sadt ebea odqc', // Replace with your email password
   },
 });
 
@@ -104,7 +104,7 @@ router.get('/unverified-users', async (req, res) => {
       const userEmail = userData.username;
   
       // Send an email to the user with the OTP and verification link
-      const verificationLink = `https://smartexamhub.vercel.app/verify/${userId}/${otp}`; // Replace with your domain
+      const verificationLink = `http://localhost:3000/verify/${userId}/${otp}`; // Replace with your domain
       transporter.sendMail({
         from: 'smartexamhub@gmail.com', // Replace with your email
         to: userEmail,

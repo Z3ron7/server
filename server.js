@@ -14,7 +14,7 @@ const crypto = require('crypto');
 
 const app = express();
 const corsOptions = {
-  origin: "https://smartexamhub.vercel.app",
+  origin: "http://localhost:3000",
   methods: "GET,PUT,POST,DELETE",
   allowedHeaders: "Content-Type",
   credentials: true,
@@ -62,7 +62,7 @@ const transporter = nodemailer.createTransport({
   service: 'gmail', // Replace with your email service provider
   auth: {
     user: 'smartexamhub@gmail.com', // Replace with your email
-    pass: 'pjfm gnwl hdwd rvfc', // Replace with your email password
+    pass: 'voew sadt ebea odqc', // Replace with your email password
   },
 });
 
@@ -284,7 +284,7 @@ app.get('/logout', (req, res) => {
         from: 'smartexamhub@gmail.com', // Replace with your email
         to: username,
         subject: 'Password Reset Request',
-        text: `Click the following link to reset your password: https://smartexamhub.vercel.app/reset-password/${resetToken}`,
+        text: `Click the following link to reset your password: http://localhost:3000/reset-password/${resetToken}`,
       };
 
       // Send the email
