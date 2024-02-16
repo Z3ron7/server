@@ -16,7 +16,7 @@ app.use(cors()); // Allow all origins, you can configure this as needed
 app.use(bodyParser.json());
 
 const transporter = nodemailer.createTransport({
-  service: 'Gmail', // Replace with your email service provider
+  service: 'gmail', // Replace with your email service provider
   auth: {
     user: 'smartexamhub@gmail.com', // Replace with your email
     pass: 'pjfm gnwl hdwd rvfc', // Replace with your email password
