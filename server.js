@@ -14,7 +14,7 @@ const crypto = require('crypto');
 
 const app = express();
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: "https://smartexamhub.vercel.app",
   methods: "GET,PUT,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,
@@ -283,7 +283,7 @@ app.get('/logout', (req, res) => {
         from: 'smartexamhub@gmail.com', // Replace with your email
         to: username,
         subject: 'Password Reset Request',
-        text: `Click the following link to reset your password: http://localhost:3000/reset-password/${resetToken}`,
+        text: `Click the following link to reset your password: https://smartexamhub.vercel.app/reset-password/${resetToken}`,
       };
 
       // Send the email
