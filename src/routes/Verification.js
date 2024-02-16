@@ -4,6 +4,7 @@ const Database = require("../configs/Database");
 const router = express.Router();
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const cors = require("cors");
 
 const db = new Database();
 const conn = db.pool;
@@ -15,7 +16,6 @@ const corsOptions = {
   optionsSuccessStatus: 204,
 };
 
-router.use(cors(corsOptions));
 router.options("https://smartexamhub.vercel.app", (req, res) => {
   console.log('Request received:', req.method, req.url);
   res.header("Access-Control-Allow-Origin", "https://smartexamhub.vercel.app");
@@ -24,6 +24,7 @@ router.options("https://smartexamhub.vercel.app", (req, res) => {
   res.header("Access-Control-Allow-Credentials", "true");
   res.status(200).send();
 });
+
 const transporter = nodemailer.createTransport({
   service: 'Gmail', // Replace with your email service provider
   auth: {
