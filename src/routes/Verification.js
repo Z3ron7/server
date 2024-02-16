@@ -16,7 +16,7 @@ const corsOptions = {
   optionsSuccessStatus: 204,
 };
 
-router.options("https://smartexamhub.vercel.app", (req, res) => {
+router.options("/", (req, res) => {
   console.log('Request received:', req.method, req.url);
   res.header("Access-Control-Allow-Origin", "https://smartexamhub.vercel.app");
 res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
