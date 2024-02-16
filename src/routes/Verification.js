@@ -5,6 +5,7 @@ const router = express.Router();
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const cors = require("cors");
+const bodyParser = require("body-parser");
 
 const db = new Database();
 const conn = db.pool;
