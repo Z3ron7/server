@@ -68,7 +68,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer ({ storage: storage})
 const transporter = nodemailer.createTransport({
-  service: 'gmail', // Replace with your email service provider
+  service: 'Gmail', // Replace with your email service provider
   auth: {
     user: 'smartexamhub@gmail.com', // Replace with your email
     pass: 'voew sadt ebea odqc', // Replace with your email password
