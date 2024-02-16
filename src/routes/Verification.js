@@ -8,7 +8,22 @@ const crypto = require('crypto');
 const db = new Database();
 const conn = db.pool;
 const queryAsync = promisify(conn.query).bind(conn);
+const corsOptions = {
+  origin: "https://smartexamhub.vercel.app",
+  methods: "GET,PUT,POST,DELETE",
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
 
+router.use(cors(corsOptions));
+router.options("https://smartexamhub.vercel.app", (req, res) => {
+  console.log('Request received:', req.method, req.url);
+  res.header("Access-Control-Allow-Origin", "https://smartexamhub.vercel.app");
+  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.status(200).send();
+});
 const transporter = nodemailer.createTransport({
   service: 'Gmail', // Replace with your email service provider
   auth: {
