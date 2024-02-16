@@ -179,7 +179,7 @@ app.post('/register', upload.single('profileImage'), async (req, res) => {
       // Send an email to the Super Admin for verification
       transporter.sendMail({
         from: 'smartexamhub@gmail.com', // Replace with your email
-        to: 'zoren.panilagao1@gmailcom', // Replace with the Super Admin's email
+        to: 'zoren.panilagao1@gmail.com', // Replace with the Super Admin's email
         subject: 'New Exam-taker Registration',
         text: 'A new Exam-taker has registered and requires verification.',
       });

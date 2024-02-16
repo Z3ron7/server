@@ -39,11 +39,11 @@ router.post('/exam-room', async (req, res) => {
 
 router.post('/end-exam-room', async (req, res) => {
   try {
-    const { exam_id, score, total_duration_minutes, endTime } = req.body;
+    const { exam_room_id, score, total_duration_minutes, end_time } = req.body;
 
     // Update the exam record in the database, including the score, total_duration_minutes, and endTime
     const updateExamQuery = 'UPDATE exam_room SET end_time = ?, total_duration_minutes = ?, score = ? WHERE exam_room_id = ?';
-    await queryAsync(updateExamQuery, [endTime, total_duration_minutes, score, exam_id]);
+    await queryAsync(updateExamQuery, [end_time, total_duration_minutes, score, exam_room_id]);
 
     res.status(200).json({ message: 'Exam ended successfully' });
   } catch (error) {

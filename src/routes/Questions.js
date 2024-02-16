@@ -233,7 +233,6 @@ router.get('/refresh', async (req, res) => {
   }
 
   try {
-    await conn.connect();
 
     conn.query(query, queryParams, (err, result) => {
       if (err) throw err;
@@ -271,8 +270,6 @@ router.get('/refresh', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
-  } finally {
-    conn.end();
   }
 });
 router.get("/search/:questionText", async (req, res) => {
@@ -280,7 +277,6 @@ router.get("/search/:questionText", async (req, res) => {
   const query = "SELECT * FROM question WHERE questionText LIKE ?";
 
   try {
-    await conn.connect();
 
     conn.query(query, [`%${questionText}%`], (error, rows) => {
       if (error) throw error;
