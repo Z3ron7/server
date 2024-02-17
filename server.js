@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const salt = 5;
 const nodemailer = require('nodemailer');
+const smtp = require('nodemailer-smtp-transport');
 const cloudinary = require('cloudinary').v2;
 const multer = require('multer');
 const path = require('path');
@@ -67,13 +68,13 @@ const storage = multer.diskStorage({
   }
 });
 const upload = multer ({ storage: storage})
-const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport(smtp({
   service: 'Gmail', // Replace with your email service provider
   auth: {
     user: 'smartexamhub@gmail.com', // Replace with your email
     pass: 'voewsadtebeaodqc', // Replace with your email password
   },
-});
+}));
 
 const verifyUser = (req, res, next) => {
   const token = req.cookies.token;
