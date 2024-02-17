@@ -3,20 +3,22 @@ const express = require("express")
 const Database = require("../configs/Database");
 const router = express.Router();
 const nodemailer = require('nodemailer');
-const smtp = require('nodemailer-smtp-transport');
 const crypto = require('crypto');
 
 const db = new Database();
 const conn = db.pool;
 const queryAsync = promisify(conn.query).bind(conn);
 
-const transporter = nodemailer.createTransport(smtp({
+const transporter = nodemailer.createTransport({
   service: 'Gmail', // Replace with your email service provider
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
   auth: {
     user: 'smartexamhub@gmail.com', // Replace with your email
     pass: 'voewsadtebeaodqc', // Replace with your email password
   },
-}));
+});
 
 const generateOTP = () => {
   return crypto.randomBytes(7).toString('hex').toUpperCase(); // Adjust the length as needed
