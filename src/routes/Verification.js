@@ -2,23 +2,12 @@ const { promisify } = require('util');
 const express = require("express")
 const Database = require("../configs/Database");
 const router = express.Router();
-const nodemailer = require('nodemailer');
+const { SendEmail } = require("./SendEmail");
 const crypto = require('crypto');
 
 const db = new Database();
 const conn = db.pool;
 const queryAsync = promisify(conn.query).bind(conn);
-
-const transporter = nodemailer.createTransport({
-  service: 'Gmail', // Replace with your email service provider
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
-  auth: {
-    user: 'smartexamhub@gmail.com', // Replace with your email
-    pass: 'voewsadtebeaodqc', // Replace with your email password
-  },
-});
 
 const generateOTP = () => {
   return crypto.randomBytes(7).toString('hex').toUpperCase(); // Adjust the length as needed
@@ -102,13 +91,16 @@ router.get('/unverified-users', async (req, res) => {
   
       // Send an email to the user with the OTP and verification link
       const verificationLink = `https://smartexamhub.vercel.app/verify/${userId}/${otp}`; // Replace with your domain
-      transporter.sendMail({
+      const mailOptions = {
         from: 'smartexamhub@gmail.com', // Replace with your email
         to: userEmail,
         subject: 'Account Verification',
         text: `Your OTP is: ${otp}. Click the following link to verify your account: ${verificationLink}`,
         html: `<p>Your OTP is: <strong>${otp}</strong>. Click the following link to verify your account: <a href="${verificationLink}">${verificationLink}</a></p>`,
-      });
+      };
+  
+      // Call SendEmail function to send the email
+      await SendEmail(mailOptions);
   
       // Send a response indicating success
       res.json({ Status: 'Verification email sent' });
