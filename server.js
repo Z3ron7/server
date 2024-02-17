@@ -6,10 +6,9 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const salt = 5;
-const nodemailer = require('nodemailer');
+const { sendEmail } = require('./sendEmail');
 const cloudinary = require('cloudinary').v2;
 const multer = require('multer');
-const path = require('path');
 const crypto = require('crypto');
 
 const app = express();
@@ -67,17 +66,6 @@ const storage = multer.diskStorage({
   }
 });
 const upload = multer ({ storage: storage})
-const {AUTH_EMAIL, AUTH_PASS} = process.env
-let transporter = nodemailer.createTransport({
-  service: 'gmail', // Replace with your email service provider
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
-  auth: {
-    user: AUTH_EMAIL, // Replace with your email
-    pass: AUTH_PASS, // Replace with your email password
-  },
-});
 
 const verifyUser = (req, res, next) => {
   const token = req.cookies.token;
@@ -103,7 +91,7 @@ app.get("/user", verifyUser, (req, res) => {
 });
 app.post('/register', upload.single('profileImage'), async (req, res) => {
   const { name, username, password, gender, status, school_id } = req.body;
-  let imagePath = ''; // Initialize imagePath as null
+  let imagePath = ''; // Initialize imagePath as an empty string
 
   try {
     // Validate incoming data
@@ -157,7 +145,7 @@ app.post('/register', upload.single('profileImage'), async (req, res) => {
         crop: 'fill',
       });
 
-      imagePath = result.url; // Save the Cloudinary URL to the imagePath
+      imagePath = result.url; // Save the Cloudinary URL to imagePath
     }
 
     // Set the role based on the status
@@ -169,24 +157,27 @@ app.post('/register', upload.single('profileImage'), async (req, res) => {
       role = 'Exam-taker'; // If status is alumni
     }
 
-    // Insert user into the database, including the imagePath
+    // Insert user into the database, including imagePath
     const insertQuery =
       'INSERT INTO users (name, username, password, gender, role, status, school_id, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
     const values = [name, username, hashedPassword, gender, role, status, school_id, imagePath];
 
-    conn.query(insertQuery, values, (err, result) => {
+    conn.query(insertQuery, values, async (err, result) => {
       if (err) {
         console.error("Error inserting user:", err);
         return res.status(500).json({ Error: "Failed to insert user" });
       }
       
       // Send an email to the Super Admin for verification
-      transporter.sendMail({
+      const mailOptions = {
         from: 'smartexamhub@gmail.com', // Replace with your email
         to: 'zoren.panilagao1@gmail.com', // Replace with the Super Admin's email
         subject: 'New Exam-taker Registration',
         text: 'A new Exam-taker has registered and requires verification.',
-      });
+      };
+
+      // Call SendEmail function to send the email
+      await sendEmail(mailOptions);
 
       return res.json({ Status: "Success" });
     });
@@ -195,7 +186,6 @@ app.post('/register', upload.single('profileImage'), async (req, res) => {
     res.status(500).json({ Error: "Registration process failed" });
   }
 });
-
 
 app.post("/login", (req, res) => {
   const sql = "SELECT * FROM users WHERE username = ?";
@@ -290,9 +280,8 @@ app.get('/logout', (req, res) => {
     await saveResetToken(user.user_id, resetToken);
 
     // Send a password reset email to the user
-    const sendPasswordResetEmail = (username, resetToken) => {
+    const sendPasswordResetEmail = async (username, resetToken) => {
       // Define the email content
-      console.log('Recipient email:', username);
       const mailOptions = {
         from: 'smartexamhub@gmail.com', // Replace with your email
         to: username,
@@ -300,18 +289,17 @@ app.get('/logout', (req, res) => {
         text: `Click the following link to reset your password: https://smartexamhub.vercel.app/reset-password/${resetToken}`,
       };
 
-      // Send the email
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error('Email sending error:', error);
-        } else {
-          console.log('Email sent:', info.response);
-        }
-      });
+      try {
+        // Call SendEmail function with mailOptions
+        await sendEmail(mailOptions);
+      } catch (error) {
+        console.error('Error sending password reset email:', error);
+        throw error;
+      }
     };
 
     // Call the function to send the password reset email
-    sendPasswordResetEmail(user.username, resetToken);
+    await sendPasswordResetEmail(user.username, resetToken);
     
     return res.json({ Status: 'Password reset link sent successfully', resetToken});
   } catch (error) {

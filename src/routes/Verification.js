@@ -2,7 +2,7 @@ const { promisify } = require('util');
 const express = require("express")
 const Database = require("../configs/Database");
 const router = express.Router();
-const { SendEmail } = require("./SendEmail");
+const { sendEmail } = require("./sendEmail");
 const crypto = require('crypto');
 
 const db = new Database();
@@ -100,7 +100,7 @@ router.get('/unverified-users', async (req, res) => {
       };
   
       // Call SendEmail function to send the email
-      await SendEmail(mailOptions);
+      await sendEmail(mailOptions);
   
       // Send a response indicating success
       res.json({ Status: 'Verification email sent' });

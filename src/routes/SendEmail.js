@@ -23,14 +23,14 @@ transporter.verify((error, success) => {
     }
 });
 
-const SendEmail = async (mailOptions) => {
+const sendEmail = async (mailOptions) => {
     try {
-        await transporter.SendMail(mailOptions);
+        await transporter.sendMail(mailOptions);
     } catch (error) {
         throw error;
     }
 };
 
 module.exports = {
-    SendEmail
+    sendEmail
 }
