@@ -2,7 +2,7 @@ const { promisify } = require('util');
 const express = require("express")
 const Database = require("../configs/Database");
 const router = express.Router();
-const { sendEmail } = require("./sendEmail");
+const { sendEmail } = require("../utils/sendEmail");
 const crypto = require('crypto');
 
 const db = new Database();
