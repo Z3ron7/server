@@ -214,15 +214,20 @@ app.post("/login", (req, res) => {
           // Here, you can check the verification status from the database
           const isVerified = data[0].isVerified; // Assuming you have an "isVerified" column
 
-          // Include the isVerified status in the token payload
-          const token = jwt.sign({ user_id, name, image, role, isVerified, school_id }, "jwt-secret-key", {
-            expiresIn: "3d",
-          });
-          res.cookie("token", token, {
-          secure: true,    // Set to true if your app is served over HTTPS
-          sameSite: "None", // Set to "None" for cross-site cookies
+          if (isVerified === 1) {
+            // Include the isVerified status in the token payload
+            const token = jwt.sign({ user_id, name, image, role, isVerified, school_id }, "jwt-secret-key", {
+              expiresIn: "3d",
             });
-          return res.json({ Status: "Login Successful", token, user_id, name, image, role, isVerified, school_id });
+            res.cookie("token", token, {
+              secure: true,    // Set to true if your app is served over HTTPS
+              sameSite: "None", // Set to "None" for cross-site cookies
+            });
+            return res.json({ Status: "Login Successful", token, user_id, name, image, role, isVerified, school_id });
+          } else {
+            // User is not verified, return an error response
+            return res.status(403).json({ Error: "Your account is not yet verified. Please wait for the administrator to verify your account." });
+          }
         } else {
           return res.json({ Error: "Password error!" });
         }
