@@ -53,6 +53,38 @@ router.post("/create", async (req, res) => {
   }
 });
 
+router.get('/fetch-data', async (req, res) => {
+  try {
+    const query = `
+    SELECT
+        q.question_id,
+        q.program_id,
+        p.program_name,
+        q.competency_id,
+        c.competency_name,
+        q.questionText,
+        ch.choice_id,
+        ch.choiceText,
+        ch.isCorrect
+    FROM
+        Question q
+    JOIN
+        Program p ON q.program_id = p.program_id
+    JOIN
+        Competency c ON q.competency_id = c.competency_id
+    JOIN
+        Choices ch ON q.question_id = ch.question_id
+    ORDER BY
+        q.question_id DESC;
+  `;
+      const result = await queryAsync(query);
+      res.json(result);
+  } catch (error) {
+      console.error('Error:', error);
+      res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 router.get('/fetch', async (req, res) => {
   const { program, competency, search } = req.query;
 
@@ -85,11 +117,12 @@ router.get('/fetch', async (req, res) => {
       if (program || competency) {
         query += ' AND';
       }
-      query += ' (q.questionText LIKE ? OR c.choiceText LIKE ?)'; // Search in questionText and choiceText
+      query += ' (q.questionText LIKE ? OR EXISTS (SELECT 1 FROM choices WHERE c.question_id = q.question_id AND c.choiceText LIKE ?))'; // Search in questionText and choiceText
+      queryParams.push(`%${search}%`);
       queryParams.push(`%${search}%`);
     }
   }
-
+  query += ' ORDER BY q.question_id DESC';
   // Add randomization for both questions and choices and limit to 500
   try {
     conn.query(query, queryParams, (err, result) => {
@@ -145,13 +178,20 @@ router.put("/update/:questionId", async (req, res) => {
       [program]
     );
 
+    console.log("Program result:", programResult);
+
     const [competencyResult] = await queryAsync(
       "SELECT competency_id FROM competency WHERE competency_name = ?",
       [competency]
     );
 
+    console.log("Competency result:", competencyResult);
+
     const program_id = programResult ? programResult.program_id : null;
     const competency_id = competencyResult ? competencyResult.competency_id : null;
+
+    console.log("Program ID:", program_id);
+    console.log("Competency ID:", competency_id);
 
     // Update the question in the database
     await queryAsync(
@@ -159,11 +199,15 @@ router.put("/update/:questionId", async (req, res) => {
       [question_text, program_id, competency_id, questionId]
     );
 
+    console.log("Question updated successfully");
+
     // Remove existing choices
     await queryAsync(
       "DELETE FROM choices WHERE question_id = ?",
       [questionId]
     );
+
+    console.log("Existing choices deleted successfully");
 
     // Insert the updated choices
     if (choices && choices.length > 0) {
@@ -174,6 +218,8 @@ router.put("/update/:questionId", async (req, res) => {
           'INSERT INTO choices (question_id, choiceText, isCorrect) VALUES (?, ?, ?)',
           [questionId, choiceText, isCorrect]
         );
+
+        console.log("Choice inserted successfully:", choiceText, isCorrect);
       }
     }
 
