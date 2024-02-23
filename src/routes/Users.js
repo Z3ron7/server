@@ -111,27 +111,30 @@ if (req.file) {
   }
 });
   
-  router.delete('/users/:user_id', async (req, res) => {
-    try {
-      const { user_id } = req.params;
-      
-      const deleteQuery = 'DELETE FROM users WHERE user_id = ?';
-      
-      // Execute the delete query
-      const result = await queryAsync(deleteQuery, [user_id]);
-      
-      if (result.affectedRows === 1) {
-        // Row deleted successfully
-        res.json({ message: 'User deleted successfully' });
-      } else {
-        // No rows were affected, meaning the user wasn't found
-        res.status(404).json({ error: 'User not found' });
-      }
-    } catch (error) {
-      console.error('Error deleting user:', error);
-      res.status(500).json({ error: 'An error occurred while deleting the user' });
+router.delete('/users/:user_id', async (req, res) => {
+  try {
+    const { user_id } = req.params;
+
+    // Delete related records in the user_exams table
+    const deleteExamsQuery = 'DELETE FROM user_exams WHERE user_id = ?';
+    await queryAsync(deleteExamsQuery, [user_id]);
+
+    // Delete the user
+    const deleteUserQuery = 'DELETE FROM users WHERE user_id = ?';
+    const result = await queryAsync(deleteUserQuery, [user_id]);
+
+    if (result.affectedRows === 1) {
+      // Row deleted successfully
+      res.json({ message: 'User deleted successfully' });
+    } else {
+      // No rows were affected, meaning the user wasn't found
+      res.status(404).json({ error: 'User not found' });
     }
-  });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ error: 'An error occurred while deleting the user' });
+  }
+});
 
   router.get('/user-stats', async (req, res) => {
     try {
