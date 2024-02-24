@@ -95,8 +95,8 @@ router.get('/unverified-users', async (req, res) => {
         from: 'smartexamhub@gmail.com', // Replace with your email
         to: userEmail,
         subject: 'Account Verification',
-        text: `Your OTP is: ${otp}. Click the following link to verify your account: ${verificationLink}`,
-        html: `<p>Your OTP is: <strong>${otp}</strong>. Click the following link to verify your account: <a href="${verificationLink}">${verificationLink}</a></p>`,
+        text: `Click the following link to verify your account: ${verificationLink}`,
+        html: `Click the following link to verify your account: <a href="${verificationLink}">${verificationLink}</a></p>`,
       };
   
       // Call SendEmail function to send the email
