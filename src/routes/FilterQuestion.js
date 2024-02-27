@@ -1,6 +1,5 @@
 const { promisify } = require('util');
 const express = require("express");
-const SSE = require('sse-express'); 
 const Database = require("../configs/Database");
 const router = express.Router();
 
