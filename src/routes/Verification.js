@@ -18,7 +18,7 @@ router.get('/unverified-users', async (req, res) => {
     try {
       // Query the database for unverified users
       const unverifiedUsers = await new Promise((resolve, reject) => {
-        const selectQuery = 'SELECT * FROM users WHERE isVerified = 0 ORDER BY user_id DESC';
+        const selectQuery = 'SELECT * FROM users WHERE isVerified = 0 ORDER BY created_at DESC';
         conn.query(selectQuery, (err, result) => {
           if (err) reject(err);
           resolve(result);
