@@ -187,19 +187,19 @@ router.delete('/users/:user_id', async (req, res) => {
     try {
       // Define a SQL query to fetch the latest activities from both tables
       const query = `
-        SELECT * FROM (SELECT user_id, program_id, competency_id, 
-                      start_time, end_time, score 
-                      FROM user_exams
-                      WHERE user_id = ?
-                      UNION
-                      SELECT user_id, program_id, competency_id, 
-                      start_time, end_time, score 
-                      FROM exam_room) AS combined
-        ORDER BY end_time DESC;
+      SELECT * FROM (
+        SELECT user_id, program_id, competency_id, start_time, end_time, score 
+        FROM user_exams
+        WHERE user_id = ?
+        UNION
+        SELECT user_id, program_id, competency_id, start_time, end_time, score 
+        FROM exam_room
+        WHERE user_id = ? -- Filter by user_id
+      ) AS combined
+      ORDER BY end_time DESC;
       `;
   
-      const latestActivities = await queryAsync(query, [user_id]);
-  
+      const latestActivities = await queryAsync(query, [user_id, user_id]);
       res.json({ latestActivities });
     } catch (error) {
       console.error('Error fetching latest activities:', error);
