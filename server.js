@@ -168,57 +168,30 @@ app.post('/register', upload.single('profileImage'), async (req, res) => {
         return res.status(500).json({ Error: "Failed to insert user" });
       }
       
-      const userIdQuery = 'SELECT LAST_INSERT_ID() as userId';
-      const { userId } = await new Promise((resolve, reject) => {
-        conn.query(userIdQuery, (err, result) => {
-          if (err) {
-            reject(err);
-          }
-          resolve(result && result[0]);
-        });
-      });
-    
-      // Get the name of the newly registered user using their user_id
-      const userNameQuery = 'SELECT name FROM users WHERE user_id = ?';
-      const { name: userName } = await new Promise((resolve, reject) => {
-        conn.query(userNameQuery, [userId], (err, result) => {
-          if (err) {
-            reject(err);
-          }
-          resolve(result && result[0]);
-        });
-      });
-    
       // Send an email to the Super Admin for verification
-      const superAdminQuery = 'SELECT username FROM users WHERE role = ? LIMIT 1';
-      const superAdminEmail = await new Promise((resolve, reject) => {
-        conn.query(superAdminQuery, ['Super Admin'], (err, result) => {
-          if (err) {
-            reject(err);
-          }
-          console.log('Result:', result); // Log the entire result for debugging
-          resolve(result && result[0] && result[0].username);
+      const mailOptions = {
+        from: 'smartexamhub@gmail.com', // Replace with your email
+        to: 'zoren.panilagao1@gmail.com', // Replace with the Super Admin's email
+        subject: 'New Exam-taker Registration',
+        text: 'A new Exam-taker has registered and requires verification.',
+      };
+
+      // Call SendEmail function to send the email
+      await sendEmail(mailOptions)
+        .then(() => {
+          res.json({ Status: "Success" });
+        })
+        .catch(error => {
+          console.error("Error sending email:", error);
+          res.status(500).json({ Error: "Failed to send email" });
         });
-      });
-
-      if (superAdminEmail) {
-        const mailOptions = {
-          from: 'smartexamhub@gmail.com', // Replace with your email
-          to: superAdminEmail,
-          subject: 'New Exam-taker Registration',
-          text: `A new Exam-taker ${userName} has registered and requires verification.`,
-        };
-
-        // Call SendEmail function to send the email
-        await sendEmail(mailOptions);
-      }
-      return res.json({ Status: "Success" });
     });
   } catch (error) {
     console.error("Registration error:", error);
     res.status(500).json({ Error: "Registration process failed" });
   }
 });
+
 
 app.post("/login", (req, res) => {
   const sql = "SELECT * FROM users WHERE username = ?";
@@ -308,7 +281,7 @@ app.get('/logout', (req, res) => {
     // Save the reset token in the database
     const saveResetToken = async (userId, resetToken) => {
       try {
-        await conn.promise().query('UPDATE users SET reset_token = ? WHERE user_id = ?', [resetToken, userId]);
+        await conn.Promise().query('UPDATE users SET reset_token = ? WHERE user_id = ?', [resetToken, userId]);
       } catch (error) {
         console.error('Error saving reset token:', error);
         throw error;

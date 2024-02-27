@@ -12,7 +12,7 @@ class Database {
       database: DB_NAME,
       waitForConnections: true,
       connectionLimit: 10, // Adjust this based on your needs
-      queueLimit: 10
+      queueLimit: 0
     });
   }
 
