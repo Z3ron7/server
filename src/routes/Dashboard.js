@@ -58,14 +58,11 @@ router.get('/fetch-exam-room', async (req, res) => {
 router.get('/fetch-rankings', async (req, res) => {
   try {
     const query = `
-    SELECT er.*, u.name as name, u.image as image, r.room_name
-    FROM exam_room er
-    LEFT JOIN users u ON er.user_id = u.user_id
-    LEFT JOIN room r ON er.room_id = r.room_id
-    WHERE er.score = (
-  SELECT MAX(score) FROM exam_room WHERE room_id = er.room_id
-)
-ORDER BY room_id, score ASC;
+      SELECT er.*, u.name as name, u.image as image, r.room_name
+      FROM exam_room er
+      LEFT JOIN users u ON er.user_id = u.user_id
+      LEFT JOIN room r ON er.room_id = r.room_id
+      ORDER BY er.room_id, er.score ASC;
     `;
 
     const userRank = await queryAsync(query);
