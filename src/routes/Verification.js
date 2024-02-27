@@ -18,7 +18,7 @@ router.get('/unverified-users', async (req, res) => {
     try {
       // Query the database for unverified users
       const unverifiedUsers = await new Promise((resolve, reject) => {
-        const selectQuery = 'SELECT * FROM users WHERE isVerified = 0';
+        const selectQuery = 'SELECT * FROM users WHERE isVerified = 0 ORDER BY user_id DESC';
         conn.query(selectQuery, (err, result) => {
           if (err) reject(err);
           resolve(result);
@@ -90,7 +90,7 @@ router.get('/unverified-users', async (req, res) => {
       const userEmail = userData.username;
   
       // Send an email to the user with the OTP and verification link
-      const verificationLink = `https://smartexamhub.vercel.app/verify/${userId}/${otp}`; // Replace with your domain
+      const verificationLink = `http://localhost:3000/verify/${userId}/${otp}`; // Replace with your domain
       const mailOptions = {
         from: 'smartexamhub@gmail.com', // Replace with your email
         to: userEmail,
