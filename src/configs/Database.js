@@ -11,8 +11,8 @@ class Database {
       password: DB_PASSWORD,
       database: DB_NAME,
       waitForConnections: true,
-      connectionLimit: 30, // Adjust this based on your needs
-      queueLimit: 0
+      connectionLimit: 10, // Adjust this based on your needs
+      queueLimit: 10
     });
   }
 
