@@ -13,7 +13,7 @@ const crypto = require('crypto');
 
 const app = express();
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: "https://smartexamhub.vercel.app",
   methods: "GET,PUT,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,
@@ -21,9 +21,9 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.options("http://localhost:3000", (req, res) => {
+app.options("https://smartexamhub.vercel.app", (req, res) => {
   console.log('Request received:', req.method, req.url);
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.header("Access-Control-Allow-Origin", "https://smartexamhub.vercel.app");
   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
   res.header("Access-Control-Allow-Headers", "Content-Type");
   res.header("Access-Control-Allow-Credentials", "true");
@@ -297,7 +297,7 @@ app.get('/logout', (req, res) => {
         from: 'smartexamhub@gmail.com', // Replace with your email
         to: username,
         subject: 'Password Reset Request',
-        text: `Click the following link to reset your password: http://localhost:3000/reset-password/${resetToken}`,
+        text: `Click the following link to reset your password: https://smartexamhub.vercel.app/reset-password/${resetToken}`,
       };
 
       try {
