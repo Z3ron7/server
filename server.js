@@ -281,7 +281,7 @@ app.get('/logout', (req, res) => {
     // Save the reset token in the database
     const saveResetToken = async (userId, resetToken) => {
       try {
-        await conn.Promise().query('UPDATE users SET reset_token = ? WHERE user_id = ?', [resetToken, userId]);
+        await conn.promise().query('UPDATE users SET reset_token = ? WHERE user_id = ?', [resetToken, userId]);
       } catch (error) {
         console.error('Error saving reset token:', error);
         throw error;
