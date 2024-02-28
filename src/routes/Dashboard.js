@@ -62,6 +62,7 @@ router.get('/fetch-rankings', async (req, res) => {
       FROM exam_room er
       LEFT JOIN users u ON er.user_id = u.user_id
       LEFT JOIN room r ON er.room_id = r.room_id
+      WHERE er.competency_id = 6
       ORDER BY er.room_id, er.score ASC;
     `;
 
