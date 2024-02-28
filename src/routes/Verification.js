@@ -90,7 +90,7 @@ router.get('/unverified-users', async (req, res) => {
       const userEmail = userData.username;
   
       // Send an email to the user with the OTP and verification link
-      const verificationLink = `https://smartexamhub.vercel.app/verify/${userId}/${otp}`; // Replace with your domain
+      const verificationLink = `https://smartexamhub-git-main-zoren-panilagaos-projects.vercel.app/verify/${userId}/${otp}`; // Replace with your domain
       const mailOptions = {
         from: 'smartexamhub@gmail.com', // Replace with your email
         to: userEmail,
